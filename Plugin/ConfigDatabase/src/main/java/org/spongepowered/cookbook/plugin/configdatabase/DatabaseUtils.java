@@ -37,16 +37,16 @@ public class DatabaseUtils {
     public static void getConnection(ConfigurationNode config) {
         Connection mycon;
         mycon = null;
-        ConfigDatabase.getLogger().info(String.format("[%s/DB]: Got called with a %s",
-                ConfigDatabase.NAME,config.getClass().getName()));
-        /* try {
-			int port = getConfigManager()
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} */
-        ConfigDatabase.getLogger().info("[%s/DB]: Children list: %s",
-                ConfigDatabase.NAME, config.getNode("DB").getValue());
+        /* This shows we have gotten the configuration variables we need to make a SQL connection from
+         * the main class. Note that we don't actually do anything to connect to the database here,
+         * and we don't want to return a null Connection, so this method has been made to return a void
+         * instead. If you want to actually attach a mysql DB, change the method to 
+         * public static Connection getConnection(ConfigurationNode config) above, and return "mycon"
+         * instead of just return.
+         */
+        ConfigDatabase.getLogger().info("[ConfigDatabase/DB]: I got the following variables from my parent class: "+config.getChildrenMap());
+				
+				return;
     }
 }
 
