@@ -57,7 +57,7 @@ public class ConfigDatabase {
     }
 
     public static Logger getLogger() {
-        return this.logger;
+        return logger;
     }
 
     @Inject
@@ -88,7 +88,7 @@ public class ConfigDatabase {
 
         this.game = event.getGame();
         this.pluginContainer = game.getPluginManager().getPlugin(ConfigDatabase.NAME);
-        this.logger = game.getPluginManager().getLogger(pluginContainer.get());
+        logger = game.getPluginManager().getLogger(pluginContainer.get());
 
         ConfigDatabase.getLogger().info(String.format("[%s]: Starting up da SpongePlots.", ConfigDatabase.NAME));
 
@@ -184,7 +184,7 @@ public class ConfigDatabase {
         // Note that here, we do not actually assign a connection to the variable db, in case you are just
         // testing this. If you have a mySQL database handy, add "db =" in front of DB.getConnection.
         
-        DB.getConnection(config.getNode("DB"));
+//        db.getConnection(config.getNode("DB"));
         getLogger().info("[ConfigDatabase]: I should now have a database connection.");
 
     }
