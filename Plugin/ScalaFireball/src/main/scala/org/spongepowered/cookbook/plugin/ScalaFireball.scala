@@ -29,7 +29,7 @@ import com.flowpowered.math.vector.Vector3d
 import com.google.common.base.Optional
 import com.google.inject.Inject
 import org.spongepowered.api.entity.player.Player
-import org.spongepowered.api.entity.projectile.fireball.LargeFireball
+import org.spongepowered.api.entity.projectile.explosive.fireball.LargeFireball
 import org.spongepowered.api.entity.projectile.{Projectile, Snowball}
 import org.spongepowered.api.entity.{Entity, EntityTypes}
 import org.spongepowered.api.event.entity.living.player.PlayerInteractEvent

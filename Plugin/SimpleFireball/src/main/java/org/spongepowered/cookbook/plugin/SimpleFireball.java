@@ -33,7 +33,7 @@ import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.entity.projectile.Projectile;
 import org.spongepowered.api.entity.projectile.Snowball;
-import org.spongepowered.api.entity.projectile.fireball.LargeFireball;
+import org.spongepowered.api.entity.projectile.explosive.fireball.LargeFireball;
 import org.spongepowered.api.event.entity.living.player.PlayerInteractEvent;
 import org.spongepowered.api.event.state.ServerStartingEvent;
 import org.spongepowered.api.item.ItemType;
