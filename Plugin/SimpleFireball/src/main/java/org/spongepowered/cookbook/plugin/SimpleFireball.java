@@ -34,15 +34,16 @@ import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.entity.projectile.Projectile;
 import org.spongepowered.api.entity.projectile.Snowball;
 import org.spongepowered.api.entity.projectile.explosive.fireball.LargeFireball;
-import org.spongepowered.api.event.entity.living.player.PlayerInteractEvent;
+import org.spongepowered.api.event.entity.player.PlayerInteractEvent;
 import org.spongepowered.api.event.state.ServerStartingEvent;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.text.message.Messages;
 import org.spongepowered.api.util.event.Order;
 import org.spongepowered.api.util.event.Subscribe;
 import org.spongepowered.api.world.World;
@@ -78,6 +79,9 @@ public class SimpleFireball {
                 FireballUpdater(), 1);
     }
 
+    private static final Text NO_PERMISSION = Texts.of(TextColors.RED,
+            "Hey! you don't have permission for large fireballs... NOOB!!");
+
     @Subscribe(order = Order.POST)
     public void onInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
@@ -91,9 +95,7 @@ public class SimpleFireball {
                 if (player.hasPermission("simplefireball.large")) {
                     spawnLargeFireball(player);
                 } else {
-                    player.sendMessage(Messages.of("Hey! you don't have "
-                            + "permission for large fireballs... NOOB!!")
-                            .builder().color(TextColors.RED).build());
+                    player.sendMessage(NO_PERMISSION);
                 }
             }
         }
