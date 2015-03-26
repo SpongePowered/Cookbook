@@ -32,17 +32,20 @@ import org.spongepowered.api.entity.player.Player
 import org.spongepowered.api.entity.projectile.explosive.fireball.LargeFireball
 import org.spongepowered.api.entity.projectile.{Projectile, Snowball}
 import org.spongepowered.api.entity.{Entity, EntityTypes}
-import org.spongepowered.api.event.entity.living.player.PlayerInteractEvent
+import org.spongepowered.api.event.entity.player.PlayerInteractEvent
 import org.spongepowered.api.event.state.ServerStartingEvent
 import org.spongepowered.api.item.ItemTypes
 import org.spongepowered.api.item.inventory.ItemStack
 import org.spongepowered.api.plugin.{Plugin, PluginContainer}
+import org.spongepowered.api.text.Texts
 import org.spongepowered.api.text.format.TextColors
-import org.spongepowered.api.text.message.Messages
 import org.spongepowered.api.util.event.{Order, Subscribe}
 import org.spongepowered.api.world.World
 
 object ScalaFireball {
+  val NoPermission = Texts.of(TextColors.RED,
+    "Hey! you don't have permission for large fireballs... NOOB!!")
+
   private def getVelocity(player: Player, multiplier: Double): Vector3d = {
     val yaw: Double = (player.getRotation.getX + 90) % 360
     val pitch: Double = player.getRotation.getY * -1
@@ -78,9 +81,7 @@ class ScalaFireball {
           if (player.hasPermission("simplefireball.large"))
             spawnLargeFireball(player)
           else
-            player.sendMessage(Messages.of("Hey! you don't have "
-              + "permission for large fireballs... NOOB!!")
-              .builder.color(TextColors.RED).build)
+            player.sendMessage(ScalaFireball.NoPermission)
         case _ =>
 
       }
