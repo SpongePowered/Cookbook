@@ -82,23 +82,18 @@ public class WorldsTest {
         @Override
         public boolean call(CommandSource source, String arguments, List<String> parents) throws CommandException {
             if (source instanceof Player) {
-                final String[] args;
                 if (arguments.isEmpty()) {
-                    args = new String[0];
-                } else {
-                    args = arguments.split(" ");
+                    source.sendMessage(Texts.of("Cannot teleport, no world name provided."));
+                    return true;
                 }
-                switch (args.length) {
-                    case 0:
-                        break;
-                    case 1:
-                        final String potentialWorldName = args[0];
-                        final Optional<World> optWorld = game.getServer().getWorld(potentialWorldName);
-                        if (optWorld.isPresent()) {
-                            ((Player) source).transferToWorld(optWorld.get().getName(), optWorld.get().getProperties().getSpawnPosition()
-                                    .toDouble());
-                        }
-                        break;
+
+                final String potentialWorldName = arguments.split(" ")[0];
+                final Optional<World> optWorld = game.getServer().getWorld(potentialWorldName);
+                if (optWorld.isPresent()) {
+                    ((Player) source).transferToWorld(optWorld.get().getName(), optWorld.get().getProperties().getSpawnPosition()
+                            .toDouble());
+                } else {
+                    source.sendMessage(Texts.of("World [", TextColors.AQUA, potentialWorldName, TextColors.WHITE, "] was not found."));
                 }
             }
             return true;
@@ -153,8 +148,11 @@ public class WorldsTest {
                 } else {
                     switch (args[0]) {
                         case "-i":
+                            // (Player) /spawn -i
+                            if (args.length == 1) {
+                                world = player.getWorld();
                             // (Player) /spawn -i <world_name>
-                            if (args.length == 2) {
+                            } else {
                                 final Optional<World> optWorldCandidate = game.getServer().getWorld(args[1]);
                                 if (optWorldCandidate.isPresent()) {
                                     world = optWorldCandidate.get();
@@ -162,9 +160,6 @@ public class WorldsTest {
                                     source.sendMessage(Texts.of("World [", TextColors.AQUA, args[1], TextColors.WHITE, "] was not found"));
                                     break;
                                 }
-                                // (Player) /spawn -i
-                            } else {
-                                world = player.getWorld();
                             }
 
                             spawnCoordinates = world.getProperties().getSpawnPosition();
@@ -176,12 +171,18 @@ public class WorldsTest {
                             break;
                         case "-s":
                             world = player.getWorld();
-                            // (Player) /spawn -s x y z
-                            if (args.length == 4) {
-                                spawnCoordinates = new Vector3i(Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
-                                // (Player) /spawn -s <no args>
-                            } else {
+
+                            // (Player) /spawn -s <no args>
+                            if (args.length == 1) {
                                 spawnCoordinates = player.getLocation().getBlockPosition();
+                            // (Player) /spawn -s x y z
+                            } else {
+                                try {
+                                    spawnCoordinates = new Vector3i(Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
+                                } catch (ArrayIndexOutOfBoundsException | NumberFormatException ex) {
+                                    source.sendMessage(Texts.of("Invalid spawn coordinates, must be in numeric format. Ex. /spawn -s 0 0 0."));
+                                    break;
+                                }
                             }
 
                             world.getProperties().setSpawnPosition(spawnCoordinates);
