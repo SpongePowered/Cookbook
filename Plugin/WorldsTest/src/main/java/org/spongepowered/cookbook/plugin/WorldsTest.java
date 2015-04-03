@@ -12,6 +12,7 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.command.CommandCallable;
 import org.spongepowered.api.util.command.CommandException;
 import org.spongepowered.api.util.command.CommandSource;
@@ -43,7 +44,7 @@ public class WorldsTest {
                 .enabled(true)
                 .loadsOnStartup(true)
                 .keepsSpawnLoaded(true)
-                .seed(42)
+                .seed(9001)
                 .dimensionType(DimensionTypes.NETHER)
                 .generator(GeneratorTypes.DEFAULT)
                 .usesMapFeatures(true)
@@ -52,6 +53,22 @@ public class WorldsTest {
                 .build();
         if (!myNether.isPresent()) {
             logger.error("Creation of my custom nether failed, implementation issue!");
+        }
+
+        Optional<World> myEnd = game.getRegistry().getWorldBuilder()
+                .name("my_end")
+                .enabled(true)
+                .loadsOnStartup(true)
+                .keepsSpawnLoaded(true)
+                .seed(1337)
+                .dimensionType(DimensionTypes.END)
+                .generator(GeneratorTypes.DEFAULT)
+                .usesMapFeatures(true)
+                .gameMode(GameModes.CREATIVE)
+                .usesMapFeatures(true)
+                .build();
+        if (!myEnd.isPresent()) {
+            logger.error("Creation of my custom end failed, implementation issue!");
         }
     }
 
@@ -123,48 +140,59 @@ public class WorldsTest {
         @Override
         public boolean call(CommandSource source, String arguments, List<String> parents) throws CommandException {
             if (source instanceof Player) {
-                final String[] args;
-                if (arguments.isEmpty()) {
-                    args = new String[0];
-                } else {
-                    args = arguments.split(" ");
-                }
+                final Player player = (Player) source;
+                final String[] args = arguments.split(" ");
+                World world;
                 Vector3i spawnCoordinates;
 
-                switch (args.length) {
-                    // (Player) /spawn
-                    case 0:
-                        spawnCoordinates = ((Player) source).getWorld().getProperties().getSpawnPosition();
-                        ((Player) source).setLocation(new Location(((Player) source).getWorld(), spawnCoordinates.toDouble()));
-                        break;
-                    case 1:
-                        final String arg = args[0];
-                        // (Player) /spawn -info
-                        switch (arg) {
-                            case "-info":
-                                if (args.length > 2) {
-                                    spawnCoordinates = null;
+                // (Player) /spawn
+                if (arguments.isEmpty()) {
+                    world = player.getWorld();
+                    spawnCoordinates = player.getWorld().getProperties().getSpawnPosition();
+                    player.setLocation(new Location(world, spawnCoordinates.toDouble()));
+                } else {
+                    switch (args[0]) {
+                        case "-i":
+                            // (Player) /spawn -i <world_name>
+                            if (args.length == 2) {
+                                final Optional<World> optWorldCandidate = game.getServer().getWorld(args[1]);
+                                if (optWorldCandidate.isPresent()) {
+                                    world = optWorldCandidate.get();
                                 } else {
-                                    spawnCoordinates = ((Player) source).getWorld().getProperties().getSpawnPosition();
+                                    source.sendMessage(Texts.of("World [", TextColors.AQUA, args[1], TextColors.WHITE, "] was not found"));
+                                    break;
                                 }
-                                source.sendMessage(Texts.of("World [" + ((Player) source).getWorld().getName() + "] -> x [" + spawnCoordinates.getX
-                                        () + "] | y [" + spawnCoordinates.getY() + "] | z [" + spawnCoordinates.getZ() + "]."));
-                                break;  
-                            case "-set":
-                            // (Player) /spawn -set x y z                              
-                                if (args.length == 4) {
-                                    int x = Integer.parseInt(args[1]);
-                                    int y = Integer.parseInt(args[2]);
-                                    int z = Integer.parseInt(args[3]);
+                                // (Player) /spawn -i
+                            } else {
+                                world = player.getWorld();
+                            }
 
-                                    ((Player) source).getWorld().getProperties().setSpawnPosition(new Vector3i(x, y, z));
-                            // (Player) /spawn -set <no args>                                 
-                                } else {
-                                    ((Player) source).getWorld().getProperties().setSpawnPosition(((Player) source).getLocation().getBlockPosition());
-                                }
+                            spawnCoordinates = world.getProperties().getSpawnPosition();
 
-                        }
-                        break;
+                            source.sendMessage(Texts.of("World [", TextColors.AQUA, world.getName(), TextColors.WHITE,
+                                    "]: spawn -> x [", TextColors.GREEN, spawnCoordinates.getX(), TextColors.WHITE, "] | y [", TextColors.GREEN,
+                                    spawnCoordinates.getY(), TextColors.WHITE, "] | z [", TextColors.GREEN, spawnCoordinates.getZ(), TextColors
+                                            .WHITE, "]."));
+                            break;
+                        case "-s":
+                            world = player.getWorld();
+                            // (Player) /spawn -s x y z
+                            if (args.length == 4) {
+                                spawnCoordinates = new Vector3i(Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
+                                // (Player) /spawn -s <no args>
+                            } else {
+                                spawnCoordinates = player.getLocation().getBlockPosition();
+                            }
+
+                            world.getProperties().setSpawnPosition(spawnCoordinates);
+
+                            source.sendMessage(Texts.of("World [", TextColors.AQUA, world.getName(), TextColors.WHITE,
+                                    "]: spawn set to -> x [", TextColors.GREEN, spawnCoordinates.getX(), TextColors.WHITE, "] | y [", TextColors
+                                            .GREEN,
+                                    spawnCoordinates.getY(), TextColors.WHITE, "] | z [", TextColors.GREEN, spawnCoordinates.getZ(), TextColors
+                                            .WHITE, "]."));
+                            break;
+                    }
                 }
             }
             return true;
@@ -177,17 +205,17 @@ public class WorldsTest {
 
         @Override
         public String getShortDescription(CommandSource source) {
-            return null;
+            return "Used to get spawn information or set the point of a world";
         }
 
         @Override
         public Text getHelp(CommandSource source) {
-            return null;
+            return Texts.of("usage: spawn -i <world_name> | -s <world_name> <x> <y> <z>");
         }
 
         @Override
         public String getUsage(CommandSource source) {
-            return null;
+            return "usage: spawn -i <world_name> | -s <world_name> <x> <y> <z>";
         }
 
         @Override
