@@ -55,9 +55,9 @@ public class WorldsTest {
             logger.error("Creation of my custom nether failed, implementation issue!");
         }
 
-        Optional<World> myEnd = game.getRegistry().getWorldBuilder()
+        game.getRegistry().getWorldBuilder()
                 .name("my_end")
-                .enabled(true)
+                .enabled(false)
                 .loadsOnStartup(true)
                 .keepsSpawnLoaded(true)
                 .seed(1337)
@@ -67,9 +67,6 @@ public class WorldsTest {
                 .gameMode(GameModes.CREATIVE)
                 .usesMapFeatures(true)
                 .build();
-        if (!myEnd.isPresent()) {
-            logger.error("Creation of my custom end failed, implementation issue!");
-        }
     }
 
     private static class CommandTPWorld implements CommandCallable {
@@ -144,7 +141,7 @@ public class WorldsTest {
                 if (arguments.isEmpty()) {
                     world = player.getWorld();
                     spawnCoordinates = player.getWorld().getProperties().getSpawnPosition();
-                    player.setLocation(new Location(world, spawnCoordinates.toDouble()));
+                    player.setLocationSafely(new Location(world, spawnCoordinates.toDouble()));
                 } else {
                     switch (args[0]) {
                         case "-i":
