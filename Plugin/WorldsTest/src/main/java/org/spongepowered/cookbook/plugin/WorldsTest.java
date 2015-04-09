@@ -3,6 +3,8 @@ package org.spongepowered.cookbook.plugin;
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.base.Optional;
 import com.google.inject.Inject;
+import net.minecraft.block.BlockBed;
+import net.minecraft.entity.Entity;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.player.Player;
@@ -39,33 +41,100 @@ public class WorldsTest {
         game.getCommandDispatcher().register(instance, new CommandTPWorld(game), "tpworld");
         game.getCommandDispatcher().register(instance, new CommandSpawn(game), "spawn");
 
-        Optional<World> myNether = game.getRegistry().getWorldBuilder()
+        game.getRegistry().getWorldBuilder()
                 .name("my_nether")
                 .enabled(true)
                 .loadsOnStartup(true)
                 .keepsSpawnLoaded(true)
                 .seed(9001)
                 .dimensionType(DimensionTypes.NETHER)
-                .generator(GeneratorTypes.DEFAULT)
+                .generator(GeneratorTypes.NETHER)
                 .usesMapFeatures(true)
                 .gameMode(GameModes.CREATIVE)
-                .usesMapFeatures(true)
                 .build();
-        if (!myNether.isPresent()) {
-            logger.error("Creation of my custom nether failed, implementation issue!");
-        }
 
         game.getRegistry().getWorldBuilder()
                 .name("my_end")
-                .enabled(false)
+                .enabled(true)
                 .loadsOnStartup(true)
                 .keepsSpawnLoaded(true)
                 .seed(1337)
                 .dimensionType(DimensionTypes.END)
-                .generator(GeneratorTypes.DEFAULT)
+                .generator(GeneratorTypes.THE_END)
                 .usesMapFeatures(true)
                 .gameMode(GameModes.CREATIVE)
+                .build();
+
+        game.getRegistry().getWorldBuilder()
+                .name("my_overend")
+                .enabled(true)
+                .loadsOnStartup(true)
+                .keepsSpawnLoaded(true)
+                .seed(1337)
+                .dimensionType(DimensionTypes.OVERWORLD)
+                .generator(GeneratorTypes.THE_END)
                 .usesMapFeatures(true)
+                .gameMode(GameModes.CREATIVE)
+                .build();
+
+        game.getRegistry().getWorldBuilder()
+                .name("my_overnether")
+                .enabled(true)
+                .loadsOnStartup(true)
+                .keepsSpawnLoaded(true)
+                .seed(1337)
+                .dimensionType(DimensionTypes.OVERWORLD)
+                .generator(GeneratorTypes.NETHER)
+                .usesMapFeatures(true)
+                .gameMode(GameModes.CREATIVE)
+                .build();
+
+        game.getRegistry().getWorldBuilder()
+                .name("my_netherover")
+                .enabled(true)
+                .loadsOnStartup(true)
+                .keepsSpawnLoaded(true)
+                .seed(1337)
+                .dimensionType(DimensionTypes.NETHER)
+                .generator(GeneratorTypes.OVERWORLD)
+                .usesMapFeatures(true)
+                .gameMode(GameModes.CREATIVE)
+                .build();
+
+        game.getRegistry().getWorldBuilder()
+                .name("my_netherend")
+                .enabled(true)
+                .loadsOnStartup(true)
+                .keepsSpawnLoaded(true)
+                .seed(1337)
+                .dimensionType(DimensionTypes.NETHER)
+                .generator(GeneratorTypes.THE_END)
+                .usesMapFeatures(true)
+                .gameMode(GameModes.CREATIVE)
+                .build();
+
+        game.getRegistry().getWorldBuilder()
+                .name("my_endother")
+                .enabled(true)
+                .loadsOnStartup(true)
+                .keepsSpawnLoaded(true)
+                .seed(1337)
+                .dimensionType(DimensionTypes.END)
+                .generator(GeneratorTypes.OVERWORLD)
+                .usesMapFeatures(true)
+                .gameMode(GameModes.CREATIVE)
+                .build();
+
+        game.getRegistry().getWorldBuilder()
+                .name("my_endnether")
+                .enabled(true)
+                .loadsOnStartup(true)
+                .keepsSpawnLoaded(true)
+                .seed(1337)
+                .dimensionType(DimensionTypes.END)
+                .generator(GeneratorTypes.NETHER)
+                .usesMapFeatures(true)
+                .gameMode(GameModes.CREATIVE)
                 .build();
     }
 
