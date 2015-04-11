@@ -3,12 +3,11 @@ package org.spongepowered.cookbook.plugin;
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.base.Optional;
 import com.google.inject.Inject;
-import net.minecraft.block.BlockBed;
-import net.minecraft.entity.Entity;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.entity.player.gamemode.GameModes;
+import org.spongepowered.api.event.Subscribe;
 import org.spongepowered.api.event.state.ServerStartingEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
@@ -18,7 +17,6 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.command.CommandCallable;
 import org.spongepowered.api.util.command.CommandException;
 import org.spongepowered.api.util.command.CommandSource;
-import org.spongepowered.api.util.event.Subscribe;
 import org.spongepowered.api.world.DimensionTypes;
 import org.spongepowered.api.world.GeneratorTypes;
 import org.spongepowered.api.world.Location;
@@ -114,7 +112,7 @@ public class WorldsTest {
                 .build();
 
         game.getRegistry().getWorldBuilder()
-                .name("my_endother")
+                .name("my_endover")
                 .enabled(true)
                 .loadsOnStartup(true)
                 .keepsSpawnLoaded(true)
