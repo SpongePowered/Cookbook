@@ -8,7 +8,7 @@ import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.entity.player.gamemode.GameModes;
 import org.spongepowered.api.event.Subscribe;
-import org.spongepowered.api.event.state.ServerStartingEvent;
+import org.spongepowered.api.event.state.ServerAboutToStartEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
@@ -34,7 +34,7 @@ public class WorldsTest {
     private PluginContainer instance;
 
     @Subscribe
-    public void onServerStarting(ServerStartingEvent event) {
+    public void onServerStarting(ServerAboutToStartEvent event) {
 
         game.getCommandDispatcher().register(instance, new CommandTPWorld(game), "tpworld");
         game.getCommandDispatcher().register(instance, new CommandSpawn(game), "spawn");
