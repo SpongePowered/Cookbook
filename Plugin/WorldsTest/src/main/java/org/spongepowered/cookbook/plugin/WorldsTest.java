@@ -40,7 +40,7 @@ public class WorldsTest {
         game.getCommandDispatcher().register(instance, new CommandSpawn(game), "spawn");
 
         game.getRegistry().getWorldBuilder()
-                .name("my_nether")
+                .name("nether")
                 .enabled(true)
                 .loadsOnStartup(true)
                 .keepsSpawnLoaded(true)
@@ -52,7 +52,7 @@ public class WorldsTest {
                 .build();
 
         game.getRegistry().getWorldBuilder()
-                .name("my_end")
+                .name("end")
                 .enabled(true)
                 .loadsOnStartup(true)
                 .keepsSpawnLoaded(true)
@@ -64,7 +64,7 @@ public class WorldsTest {
                 .build();
 
         game.getRegistry().getWorldBuilder()
-                .name("my_overend")
+                .name("overend")
                 .enabled(true)
                 .loadsOnStartup(true)
                 .keepsSpawnLoaded(true)
@@ -76,7 +76,7 @@ public class WorldsTest {
                 .build();
 
         game.getRegistry().getWorldBuilder()
-                .name("my_overnether")
+                .name("overnether")
                 .enabled(true)
                 .loadsOnStartup(true)
                 .keepsSpawnLoaded(true)
@@ -88,7 +88,7 @@ public class WorldsTest {
                 .build();
 
         game.getRegistry().getWorldBuilder()
-                .name("my_netherover")
+                .name("netherover")
                 .enabled(true)
                 .loadsOnStartup(true)
                 .keepsSpawnLoaded(true)
@@ -100,7 +100,7 @@ public class WorldsTest {
                 .build();
 
         game.getRegistry().getWorldBuilder()
-                .name("my_netherend")
+                .name("netherend")
                 .enabled(true)
                 .loadsOnStartup(true)
                 .keepsSpawnLoaded(true)
@@ -112,7 +112,7 @@ public class WorldsTest {
                 .build();
 
         game.getRegistry().getWorldBuilder()
-                .name("my_endover")
+                .name("endover")
                 .enabled(true)
                 .loadsOnStartup(true)
                 .keepsSpawnLoaded(true)
@@ -124,7 +124,7 @@ public class WorldsTest {
                 .build();
 
         game.getRegistry().getWorldBuilder()
-                .name("my_endnether")
+                .name("endnether")
                 .enabled(true)
                 .loadsOnStartup(true)
                 .keepsSpawnLoaded(true)
@@ -154,8 +154,12 @@ public class WorldsTest {
                 final String potentialWorldName = arguments.split(" ")[0];
                 final Optional<World> optWorld = game.getServer().getWorld(potentialWorldName);
                 if (optWorld.isPresent()) {
-                    ((Player) source).transferToWorld(optWorld.get().getName(), optWorld.get().getProperties().getSpawnPosition()
+                    boolean relocated = ((Player) source).transferToWorld(optWorld.get().getName(), optWorld.get().getProperties().getSpawnPosition()
                             .toDouble());
+                    if (!relocated) {
+                        source.sendMessage(Texts.of("Could not teleport to World [", TextColors.AQUA, potentialWorldName, TextColors.WHITE, "]. "
+                                + "Probably due to no safe location found..."));
+                    }
                 } else {
                     source.sendMessage(Texts.of("World [", TextColors.AQUA, potentialWorldName, TextColors.WHITE, "] was not found."));
                 }
