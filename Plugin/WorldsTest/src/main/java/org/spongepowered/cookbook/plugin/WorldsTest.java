@@ -58,7 +58,7 @@ public class WorldsTest {
                 .keepsSpawnLoaded(true)
                 .seed(1337)
                 .dimensionType(DimensionTypes.END)
-                .generator(GeneratorTypes.THE_END)
+                .generator(GeneratorTypes.END)
                 .usesMapFeatures(true)
                 .gameMode(GameModes.CREATIVE)
                 .build();
@@ -70,7 +70,7 @@ public class WorldsTest {
                 .keepsSpawnLoaded(true)
                 .seed(1337)
                 .dimensionType(DimensionTypes.OVERWORLD)
-                .generator(GeneratorTypes.THE_END)
+                .generator(GeneratorTypes.END)
                 .usesMapFeatures(true)
                 .gameMode(GameModes.CREATIVE)
                 .build();
@@ -106,7 +106,7 @@ public class WorldsTest {
                 .keepsSpawnLoaded(true)
                 .seed(1337)
                 .dimensionType(DimensionTypes.NETHER)
-                .generator(GeneratorTypes.THE_END)
+                .generator(GeneratorTypes.END)
                 .usesMapFeatures(true)
                 .gameMode(GameModes.CREATIVE)
                 .build();
