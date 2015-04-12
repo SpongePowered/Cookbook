@@ -5,7 +5,6 @@ import com.google.common.base.Optional;
 import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
-import org.spongepowered.api.Platform;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.entity.player.gamemode.GameModes;
 import org.spongepowered.api.event.Subscribe;
@@ -27,6 +26,7 @@ import java.util.List;
 
 @Plugin(id = "worldstest", name = "WorldsTest", version = "0.1")
 public class WorldsTest {
+
     @Inject
     private Logger logger;
     @Inject
@@ -40,106 +40,106 @@ public class WorldsTest {
         game.getCommandDispatcher().register(instance, new CommandTPWorld(game), "tpworld");
         game.getCommandDispatcher().register(instance, new CommandSpawn(game), "spawn");
 
-        if (game.getPlatform() == Platform.SERVER) {
-            game.getRegistry().getWorldBuilder()
-                    .name("nether")
-                    .enabled(true)
-                    .loadsOnStartup(true)
-                    .keepsSpawnLoaded(true)
-                    .seed(9001)
-                    .dimensionType(DimensionTypes.NETHER)
-                    .generator(GeneratorTypes.NETHER)
-                    .usesMapFeatures(true)
-                    .gameMode(GameModes.CREATIVE)
-                    .build();
+        game.getRegistry().getWorldBuilder()
+                .name("nether")
+                .enabled(true)
+                .loadsOnStartup(true)
+                .keepsSpawnLoaded(true)
+                .seed(9001)
+                .dimensionType(DimensionTypes.NETHER)
+                .generator(GeneratorTypes.NETHER)
+                .usesMapFeatures(true)
+                .gameMode(GameModes.CREATIVE)
+                .build();
 
-            game.getRegistry().getWorldBuilder()
-                    .name("end")
-                    .enabled(true)
-                    .loadsOnStartup(true)
-                    .keepsSpawnLoaded(true)
-                    .seed(1337)
-                    .dimensionType(DimensionTypes.END)
-                    .generator(GeneratorTypes.END)
-                    .usesMapFeatures(true)
-                    .gameMode(GameModes.CREATIVE)
-                    .build();
+        game.getRegistry().getWorldBuilder()
+                .name("end")
+                .enabled(true)
+                .loadsOnStartup(true)
+                .keepsSpawnLoaded(true)
+                .seed(1337)
+                .dimensionType(DimensionTypes.END)
+                .generator(GeneratorTypes.END)
+                .usesMapFeatures(true)
+                .gameMode(GameModes.CREATIVE)
+                .build();
 
-            game.getRegistry().getWorldBuilder()
-                    .name("overend")
-                    .enabled(true)
-                    .loadsOnStartup(true)
-                    .keepsSpawnLoaded(true)
-                    .seed(1337)
-                    .dimensionType(DimensionTypes.OVERWORLD)
-                    .generator(GeneratorTypes.END)
-                    .usesMapFeatures(true)
-                    .gameMode(GameModes.CREATIVE)
-                    .build();
+        game.getRegistry().getWorldBuilder()
+                .name("overend")
+                .enabled(true)
+                .loadsOnStartup(true)
+                .keepsSpawnLoaded(true)
+                .seed(1337)
+                .dimensionType(DimensionTypes.OVERWORLD)
+                .generator(GeneratorTypes.END)
+                .usesMapFeatures(true)
+                .gameMode(GameModes.CREATIVE)
+                .build();
 
-            game.getRegistry().getWorldBuilder()
-                    .name("overnether")
-                    .enabled(true)
-                    .loadsOnStartup(true)
-                    .keepsSpawnLoaded(true)
-                    .seed(1337)
-                    .dimensionType(DimensionTypes.OVERWORLD)
-                    .generator(GeneratorTypes.NETHER)
-                    .usesMapFeatures(true)
-                    .gameMode(GameModes.CREATIVE)
-                    .build();
+        game.getRegistry().getWorldBuilder()
+                .name("overnether")
+                .enabled(true)
+                .loadsOnStartup(true)
+                .keepsSpawnLoaded(true)
+                .seed(1337)
+                .dimensionType(DimensionTypes.OVERWORLD)
+                .generator(GeneratorTypes.NETHER)
+                .usesMapFeatures(true)
+                .gameMode(GameModes.CREATIVE)
+                .build();
 
-            game.getRegistry().getWorldBuilder()
-                    .name("netherover")
-                    .enabled(true)
-                    .loadsOnStartup(true)
-                    .keepsSpawnLoaded(true)
-                    .seed(1337)
-                    .dimensionType(DimensionTypes.NETHER)
-                    .generator(GeneratorTypes.OVERWORLD)
-                    .usesMapFeatures(true)
-                    .gameMode(GameModes.CREATIVE)
-                    .build();
+        game.getRegistry().getWorldBuilder()
+                .name("netherover")
+                .enabled(true)
+                .loadsOnStartup(true)
+                .keepsSpawnLoaded(true)
+                .seed(1337)
+                .dimensionType(DimensionTypes.NETHER)
+                .generator(GeneratorTypes.OVERWORLD)
+                .usesMapFeatures(true)
+                .gameMode(GameModes.CREATIVE)
+                .build();
 
-            game.getRegistry().getWorldBuilder()
-                    .name("netherend")
-                    .enabled(true)
-                    .loadsOnStartup(true)
-                    .keepsSpawnLoaded(true)
-                    .seed(1337)
-                    .dimensionType(DimensionTypes.NETHER)
-                    .generator(GeneratorTypes.END)
-                    .usesMapFeatures(true)
-                    .gameMode(GameModes.CREATIVE)
-                    .build();
+        game.getRegistry().getWorldBuilder()
+                .name("netherend")
+                .enabled(true)
+                .loadsOnStartup(true)
+                .keepsSpawnLoaded(true)
+                .seed(1337)
+                .dimensionType(DimensionTypes.NETHER)
+                .generator(GeneratorTypes.END)
+                .usesMapFeatures(true)
+                .gameMode(GameModes.CREATIVE)
+                .build();
 
-            game.getRegistry().getWorldBuilder()
-                    .name("endover")
-                    .enabled(true)
-                    .loadsOnStartup(true)
-                    .keepsSpawnLoaded(true)
-                    .seed(1337)
-                    .dimensionType(DimensionTypes.END)
-                    .generator(GeneratorTypes.OVERWORLD)
-                    .usesMapFeatures(true)
-                    .gameMode(GameModes.CREATIVE)
-                    .build();
+        game.getRegistry().getWorldBuilder()
+                .name("endover")
+                .enabled(true)
+                .loadsOnStartup(true)
+                .keepsSpawnLoaded(true)
+                .seed(1337)
+                .dimensionType(DimensionTypes.END)
+                .generator(GeneratorTypes.OVERWORLD)
+                .usesMapFeatures(true)
+                .gameMode(GameModes.CREATIVE)
+                .build();
 
-            game.getRegistry().getWorldBuilder()
-                    .name("endnether")
-                    .enabled(true)
-                    .loadsOnStartup(true)
-                    .keepsSpawnLoaded(true)
-                    .seed(1337)
-                    .dimensionType(DimensionTypes.END)
-                    .generator(GeneratorTypes.NETHER)
-                    .usesMapFeatures(true)
-                    .gameMode(GameModes.CREATIVE)
-                    .build();
-        }
+        game.getRegistry().getWorldBuilder()
+                .name("endnether")
+                .enabled(true)
+                .loadsOnStartup(true)
+                .keepsSpawnLoaded(true)
+                .seed(1337)
+                .dimensionType(DimensionTypes.END)
+                .generator(GeneratorTypes.NETHER)
+                .usesMapFeatures(true)
+                .gameMode(GameModes.CREATIVE)
+                .build();
+
     }
 
     private static class CommandTPWorld implements CommandCallable {
+
         private final Game game;
 
         public CommandTPWorld(Game game) {
@@ -197,6 +197,7 @@ public class WorldsTest {
     }
 
     private static class CommandSpawn implements CommandCallable {
+
         private final Game game;
 
         public CommandSpawn(Game game) {
@@ -222,7 +223,7 @@ public class WorldsTest {
                             // (Player) /spawn -i
                             if (args.length == 1) {
                                 world = player.getWorld();
-                            // (Player) /spawn -i <world_name>
+                                // (Player) /spawn -i <world_name>
                             } else {
                                 final Optional<World> optWorldCandidate = game.getServer().getWorld(args[1]);
                                 if (optWorldCandidate.isPresent()) {
@@ -246,7 +247,7 @@ public class WorldsTest {
                             // (Player) /spawn -s <no args>
                             if (args.length == 1) {
                                 spawnCoordinates = player.getLocation().getBlockPosition();
-                            // (Player) /spawn -s x y z
+                                // (Player) /spawn -s x y z
                             } else {
                                 try {
                                     spawnCoordinates = new Vector3i(Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
