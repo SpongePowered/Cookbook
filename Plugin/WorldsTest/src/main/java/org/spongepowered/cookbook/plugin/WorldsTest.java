@@ -1,5 +1,10 @@
 package org.spongepowered.cookbook.plugin;
 
+import static org.spongepowered.api.util.command.args.GenericArguments.onlyOne;
+import static org.spongepowered.api.util.command.args.GenericArguments.playerOrSource;
+import static org.spongepowered.api.util.command.args.GenericArguments.seq;
+import static org.spongepowered.api.util.command.args.GenericArguments.world;
+
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.base.Optional;
 import com.google.inject.Inject;
@@ -8,7 +13,7 @@ import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.entity.player.gamemode.GameModes;
 import org.spongepowered.api.event.Subscribe;
-import org.spongepowered.api.event.state.ServerAboutToStartEvent;
+import org.spongepowered.api.event.state.ServerStartingEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
@@ -16,11 +21,16 @@ import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.command.CommandCallable;
 import org.spongepowered.api.util.command.CommandException;
+import org.spongepowered.api.util.command.CommandResult;
 import org.spongepowered.api.util.command.CommandSource;
+import org.spongepowered.api.util.command.args.CommandContext;
+import org.spongepowered.api.util.command.spec.CommandExecutor;
+import org.spongepowered.api.util.command.spec.CommandSpec;
 import org.spongepowered.api.world.DimensionTypes;
 import org.spongepowered.api.world.GeneratorTypes;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.storage.WorldProperties;
 
 import java.util.List;
 
@@ -35,11 +45,29 @@ public class WorldsTest {
     private PluginContainer instance;
 
     @Subscribe
-    public void onServerStarting(ServerAboutToStartEvent event) {
+    public void onServerStarting(ServerStartingEvent event) {
+        game.getCommandDispatcher().register(instance, CommandSpec.builder()
+                .setDescription(Texts.of("Teleports a player to another world"))
+                .setArguments(seq(playerOrSource(Texts.of("target"), game), onlyOne(world(Texts.of("world"), game))))
+                .setExecutor(new CommandExecutor() {
+                    @Override
+                    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+                        final Optional<WorldProperties> optWorldProperties = args.getOne("world");
+                        final Optional<World> optWorld = game.getServer().getWorld(optWorldProperties.get().getWorldName());
+                        if (!optWorld.isPresent()) {
+                            throw new CommandException(Texts.of("World [", Texts.of(TextColors.AQUA, optWorldProperties.get().getWorldName()), "] "
+                                    + "was not found."));
+                        }
+                        args.<Player>getOne("target").get().transferToWorld(optWorld.get().getName(), optWorld.get().getProperties()
+                                .getSpawnPosition().toDouble());
+                        return CommandResult.success();
+                    }
+                })
+                .build()
+        , "tpworld");
 
-        game.getCommandDispatcher().register(instance, new CommandTPWorld(game), "tpworld");
         game.getCommandDispatcher().register(instance, new CommandSpawn(game), "spawn");
-
+        
         game.getRegistry().getWorldBuilder()
                 .name("nether")
                 .enabled(true)
@@ -138,64 +166,6 @@ public class WorldsTest {
 
     }
 
-    private static class CommandTPWorld implements CommandCallable {
-
-        private final Game game;
-
-        public CommandTPWorld(Game game) {
-            this.game = game;
-        }
-
-        @Override
-        public boolean call(CommandSource source, String arguments, List<String> parents) throws CommandException {
-            if (source instanceof Player) {
-                if (arguments.isEmpty()) {
-                    source.sendMessage(Texts.of("Cannot teleport, no world name provided."));
-                    return true;
-                }
-
-                final String potentialWorldName = arguments.split(" ")[0];
-                final Optional<World> optWorld = game.getServer().getWorld(potentialWorldName);
-                if (optWorld.isPresent()) {
-                    boolean relocated = ((Player) source).transferToWorld(optWorld.get().getName(), optWorld.get().getProperties().getSpawnPosition()
-                            .toDouble());
-                    if (!relocated) {
-                        source.sendMessage(Texts.of("Could not teleport to World [", TextColors.AQUA, potentialWorldName, TextColors.WHITE, "]. "
-                                + "Probably due to no safe location found..."));
-                    }
-                } else {
-                    source.sendMessage(Texts.of("World [", TextColors.AQUA, potentialWorldName, TextColors.WHITE, "] was not found."));
-                }
-            }
-            return true;
-        }
-
-        @Override
-        public boolean testPermission(CommandSource source) {
-            return source.hasPermission("command.sponge.tpworld");
-        }
-
-        @Override
-        public String getShortDescription(CommandSource source) {
-            return "Used to teleport a player to a world";
-        }
-
-        @Override
-        public Text getHelp(CommandSource source) {
-            return Texts.of("usage: <player> <worldname>");
-        }
-
-        @Override
-        public String getUsage(CommandSource source) {
-            return "usage: <player> <worldname>";
-        }
-
-        @Override
-        public List<String> getSuggestions(CommandSource source, String arguments) throws CommandException {
-            return null;
-        }
-    }
-
     private static class CommandSpawn implements CommandCallable {
 
         private final Game game;
@@ -205,7 +175,27 @@ public class WorldsTest {
         }
 
         @Override
-        public boolean call(CommandSource source, String arguments, List<String> parents) throws CommandException {
+        public boolean testPermission(CommandSource source) {
+            return source.hasPermission("command.sponge.spawn");
+        }
+
+        @Override
+        public Optional<Text> getShortDescription(CommandSource source) {
+            return Optional.of((Text) Texts.of("Used to get spawn information or set the point of a world"));
+        }
+
+        @Override
+        public Optional<Text> getHelp(CommandSource source) {
+            return Optional.of((Text) Texts.of("usage: spawn -i <world_name> | -s <world_name> <x> <y> <z>"));
+        }
+
+        @Override
+        public Text getUsage(CommandSource source) {
+            return Texts.of("usage: spawn -i <world_name> | -s <world_name> <x> <y> <z>");
+        }
+
+        @Override
+        public Optional<CommandResult> process(CommandSource source, String arguments) throws CommandException {
             if (source instanceof Player) {
                 final Player player = (Player) source;
                 final String[] args = arguments.split(" ");
@@ -268,27 +258,7 @@ public class WorldsTest {
                     }
                 }
             }
-            return true;
-        }
-
-        @Override
-        public boolean testPermission(CommandSource source) {
-            return source.hasPermission("command.sponge.spawn");
-        }
-
-        @Override
-        public String getShortDescription(CommandSource source) {
-            return "Used to get spawn information or set the point of a world";
-        }
-
-        @Override
-        public Text getHelp(CommandSource source) {
-            return Texts.of("usage: spawn -i <world_name> | -s <world_name> <x> <y> <z>");
-        }
-
-        @Override
-        public String getUsage(CommandSource source) {
-            return "usage: spawn -i <world_name> | -s <world_name> <x> <y> <z>";
+            return Optional.of(CommandResult.success());
         }
 
         @Override
