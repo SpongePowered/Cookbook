@@ -37,15 +37,92 @@ import java.util.List;
 @Plugin(id = "worldstest", name = "WorldsTest", version = "0.1")
 public class WorldsTest {
 
-    @Inject
-    private Logger logger;
-    @Inject
-    private Game game;
-    @Inject
-    private PluginContainer instance;
+    @Inject private Logger logger;
+    @Inject private Game game;
+    @Inject private PluginContainer instance;
 
     @Subscribe
     public void onServerStarting(ServerStartingEvent event) {
+        game.getRegistry().getWorldBuilder()
+                .name("nether")
+                .enabled(true)
+                .loadsOnStartup(true)
+                .keepsSpawnLoaded(true)
+                .dimensionType(DimensionTypes.NETHER)
+                .generator(GeneratorTypes.NETHER)
+                .gameMode(GameModes.CREATIVE)
+                .build();
+
+        game.getRegistry().getWorldBuilder()
+                .name("end")
+                .enabled(true)
+                .loadsOnStartup(true)
+                .keepsSpawnLoaded(true)
+                .dimensionType(DimensionTypes.END)
+                .generator(GeneratorTypes.END)
+                .gameMode(GameModes.CREATIVE)
+                .build();
+
+        game.getRegistry().getWorldBuilder()
+                .name("overend")
+                .enabled(true)
+                .loadsOnStartup(true)
+                .keepsSpawnLoaded(true)
+                .dimensionType(DimensionTypes.OVERWORLD)
+                .generator(GeneratorTypes.END)
+                .gameMode(GameModes.CREATIVE)
+                .build();
+
+        game.getRegistry().getWorldBuilder()
+                .name("overnether")
+                .enabled(true)
+                .loadsOnStartup(true)
+                .keepsSpawnLoaded(true)
+                .dimensionType(DimensionTypes.OVERWORLD)
+                .generator(GeneratorTypes.NETHER)
+                .gameMode(GameModes.CREATIVE)
+                .build();
+
+        game.getRegistry().getWorldBuilder()
+                .name("netherover")
+                .enabled(true)
+                .loadsOnStartup(true)
+                .keepsSpawnLoaded(true)
+                .dimensionType(DimensionTypes.NETHER)
+                .generator(GeneratorTypes.OVERWORLD)
+                .gameMode(GameModes.CREATIVE)
+                .build();
+
+        game.getRegistry().getWorldBuilder()
+                .name("netherend")
+                .enabled(true)
+                .loadsOnStartup(true)
+                .keepsSpawnLoaded(true)
+                .dimensionType(DimensionTypes.NETHER)
+                .generator(GeneratorTypes.END)
+                .gameMode(GameModes.CREATIVE)
+                .build();
+
+        game.getRegistry().getWorldBuilder()
+                .name("endover")
+                .enabled(true)
+                .loadsOnStartup(true)
+                .keepsSpawnLoaded(true)
+                .dimensionType(DimensionTypes.END)
+                .generator(GeneratorTypes.OVERWORLD)
+                .gameMode(GameModes.CREATIVE)
+                .build();
+
+        game.getRegistry().getWorldBuilder()
+                .name("endnether")
+                .enabled(true)
+                .loadsOnStartup(true)
+                .keepsSpawnLoaded(true)
+                .dimensionType(DimensionTypes.END)
+                .generator(GeneratorTypes.NETHER)
+                .gameMode(GameModes.CREATIVE)
+                .build();
+
         game.getCommandDispatcher().register(instance, CommandSpec.builder()
                 .setDescription(Texts.of("Teleports a player to another world"))
                 .setArguments(seq(playerOrSource(Texts.of("target"), game), onlyOne(world(Texts.of("world"), game))))
@@ -58,111 +135,18 @@ public class WorldsTest {
                             throw new CommandException(Texts.of("World [", Texts.of(TextColors.AQUA, optWorldProperties.get().getWorldName()), "] "
                                     + "was not found."));
                         }
-                        args.<Player>getOne("target").get().transferToWorld(optWorld.get().getName(), optWorld.get().getProperties()
-                                .getSpawnPosition().toDouble());
+                        for (Player target : args.<Player>getAll("target")) {
+                            target.transferToWorld(optWorld.get().getName(), optWorld.get().getProperties()
+                                    .getSpawnPosition().toDouble());
+                        }
+
                         return CommandResult.success();
                     }
                 })
                 .build()
-        , "tpworld");
+                , "tpworld");
 
         game.getCommandDispatcher().register(instance, new CommandSpawn(game), "spawn");
-        
-        game.getRegistry().getWorldBuilder()
-                .name("nether")
-                .enabled(true)
-                .loadsOnStartup(true)
-                .keepsSpawnLoaded(true)
-                .seed(9001)
-                .dimensionType(DimensionTypes.NETHER)
-                .generator(GeneratorTypes.NETHER)
-                .usesMapFeatures(true)
-                .gameMode(GameModes.CREATIVE)
-                .build();
-
-        game.getRegistry().getWorldBuilder()
-                .name("end")
-                .enabled(true)
-                .loadsOnStartup(true)
-                .keepsSpawnLoaded(true)
-                .seed(1337)
-                .dimensionType(DimensionTypes.END)
-                .generator(GeneratorTypes.END)
-                .usesMapFeatures(true)
-                .gameMode(GameModes.CREATIVE)
-                .build();
-
-        game.getRegistry().getWorldBuilder()
-                .name("overend")
-                .enabled(true)
-                .loadsOnStartup(true)
-                .keepsSpawnLoaded(true)
-                .seed(1337)
-                .dimensionType(DimensionTypes.OVERWORLD)
-                .generator(GeneratorTypes.END)
-                .usesMapFeatures(true)
-                .gameMode(GameModes.CREATIVE)
-                .build();
-
-        game.getRegistry().getWorldBuilder()
-                .name("overnether")
-                .enabled(true)
-                .loadsOnStartup(true)
-                .keepsSpawnLoaded(true)
-                .seed(1337)
-                .dimensionType(DimensionTypes.OVERWORLD)
-                .generator(GeneratorTypes.NETHER)
-                .usesMapFeatures(true)
-                .gameMode(GameModes.CREATIVE)
-                .build();
-
-        game.getRegistry().getWorldBuilder()
-                .name("netherover")
-                .enabled(true)
-                .loadsOnStartup(true)
-                .keepsSpawnLoaded(true)
-                .seed(1337)
-                .dimensionType(DimensionTypes.NETHER)
-                .generator(GeneratorTypes.OVERWORLD)
-                .usesMapFeatures(true)
-                .gameMode(GameModes.CREATIVE)
-                .build();
-
-        game.getRegistry().getWorldBuilder()
-                .name("netherend")
-                .enabled(true)
-                .loadsOnStartup(true)
-                .keepsSpawnLoaded(true)
-                .seed(1337)
-                .dimensionType(DimensionTypes.NETHER)
-                .generator(GeneratorTypes.END)
-                .usesMapFeatures(true)
-                .gameMode(GameModes.CREATIVE)
-                .build();
-
-        game.getRegistry().getWorldBuilder()
-                .name("endover")
-                .enabled(true)
-                .loadsOnStartup(true)
-                .keepsSpawnLoaded(true)
-                .seed(1337)
-                .dimensionType(DimensionTypes.END)
-                .generator(GeneratorTypes.OVERWORLD)
-                .usesMapFeatures(true)
-                .gameMode(GameModes.CREATIVE)
-                .build();
-
-        game.getRegistry().getWorldBuilder()
-                .name("endnether")
-                .enabled(true)
-                .loadsOnStartup(true)
-                .keepsSpawnLoaded(true)
-                .seed(1337)
-                .dimensionType(DimensionTypes.END)
-                .generator(GeneratorTypes.NETHER)
-                .usesMapFeatures(true)
-                .gameMode(GameModes.CREATIVE)
-                .build();
 
     }
 
