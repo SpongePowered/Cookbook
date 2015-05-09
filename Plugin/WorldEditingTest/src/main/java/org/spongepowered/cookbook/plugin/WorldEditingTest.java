@@ -14,11 +14,11 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.util.PositionOutOfBoundsException;
 import org.spongepowered.api.util.command.CommandCallable;
 import org.spongepowered.api.util.command.CommandException;
 import org.spongepowered.api.util.command.CommandResult;
 import org.spongepowered.api.util.command.CommandSource;
-import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.biome.BiomeTypes;
 import org.spongepowered.api.world.extent.Extent;
@@ -84,12 +84,15 @@ public class WorldEditingTest {
                 final World world = player.getWorld();
                 final Vector3i blockPosition = getPosition(player, split, index);
                 final Vector2i biomePosition = blockPosition.toVector2(true);
-                final Chunk chunk = world.getChunk(game.getServer().getChunkLayout().toChunk(blockPosition).get()).get();
-                final Extent extent = useChunk ? chunk : world;
-                player.sendMessage(Texts.of(extent.getBlockType(blockPosition).getName()));
-                player.sendMessage(Texts.of(extent.getBiome(biomePosition).getName()));
-                extent.setBiome(biomePosition, BiomeTypes.SWAMPLAND);
-                extent.setBlockType(blockPosition, BlockTypes.GRASS);
+                final Extent extent = useChunk ? world.getChunk(game.getServer().getChunkLayout().toChunk(blockPosition).get()).get() : world;
+                try {
+                    player.sendMessage(Texts.of(extent.getBlockType(blockPosition).getName()));
+                    player.sendMessage(Texts.of(extent.getBiome(biomePosition).getName()));
+                    extent.setBiome(biomePosition, BiomeTypes.SWAMPLAND);
+                    extent.setBlockType(blockPosition, BlockTypes.GRASS);
+                } catch (PositionOutOfBoundsException exception) {
+                    player.sendMessage(Texts.of("The position is out of bounds"));
+                }
                 return Optional.of(CommandResult.success());
             }
             throw new CommandException(Texts.of("This command can only be executed by a player"));
