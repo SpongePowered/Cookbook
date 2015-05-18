@@ -42,96 +42,106 @@ public class WorldsTest {
     @Subscribe
     public void onServerStarting(ServerStartingEvent event) {
         this.game.getRegistry().getWorldBuilder()
-                .name("nether")
-                .enabled(true)
-                .loadsOnStartup(true)
-                .keepsSpawnLoaded(true)
-                .dimensionType(DimensionTypes.NETHER)
-                .generator(GeneratorTypes.NETHER)
-                .gameMode(GameModes.CREATIVE)
-                .build();
+            .name("nether")
+            .enabled(true)
+            .loadsOnStartup(true)
+            .keepsSpawnLoaded(true)
+            .dimensionType(DimensionTypes.NETHER)
+            .generator(GeneratorTypes.NETHER)
+            .gameMode(GameModes.CREATIVE)
+            .build();
 
         this.game.getRegistry().getWorldBuilder()
-                .name("end")
-                .enabled(true)
-                .loadsOnStartup(true)
-                .keepsSpawnLoaded(true)
-                .dimensionType(DimensionTypes.END)
-                .generator(GeneratorTypes.END)
-                .gameMode(GameModes.CREATIVE)
-                .build();
+            .name("end")
+            .enabled(true)
+            .loadsOnStartup(true)
+            .keepsSpawnLoaded(true)
+            .dimensionType(DimensionTypes.END)
+            .generator(GeneratorTypes.END)
+            .gameMode(GameModes.CREATIVE)
+            .build();
 
         this.game.getRegistry().getWorldBuilder()
-                .name("overend")
-                .enabled(true)
-                .loadsOnStartup(true)
-                .keepsSpawnLoaded(true)
-                .dimensionType(DimensionTypes.OVERWORLD)
-                .generator(GeneratorTypes.END)
-                .gameMode(GameModes.CREATIVE)
-                .build();
+            .name("overend")
+            .enabled(true)
+            .loadsOnStartup(true)
+            .keepsSpawnLoaded(true)
+            .dimensionType(DimensionTypes.OVERWORLD)
+            .generator(GeneratorTypes.END)
+            .gameMode(GameModes.CREATIVE)
+            .build();
 
         this.game.getRegistry().getWorldBuilder()
-                .name("netherover")
-                .enabled(true)
-                .loadsOnStartup(true)
-                .keepsSpawnLoaded(true)
-                .dimensionType(DimensionTypes.NETHER)
-                .generator(GeneratorTypes.OVERWORLD)
-                .gameMode(GameModes.CREATIVE)
-                .build();
+            .name("netherover")
+            .enabled(true)
+            .loadsOnStartup(true)
+            .keepsSpawnLoaded(true)
+            .dimensionType(DimensionTypes.NETHER)
+            .generator(GeneratorTypes.OVERWORLD)
+            .gameMode(GameModes.CREATIVE)
+            .build();
 
         this.game.getRegistry().getWorldBuilder()
-                .name("netherend")
-                .enabled(true)
-                .loadsOnStartup(true)
-                .keepsSpawnLoaded(true)
-                .dimensionType(DimensionTypes.NETHER)
-                .generator(GeneratorTypes.END)
-                .gameMode(GameModes.CREATIVE)
-                .build();
+            .name("netherend")
+            .enabled(true)
+            .loadsOnStartup(true)
+            .keepsSpawnLoaded(true)
+            .dimensionType(DimensionTypes.NETHER)
+            .generator(GeneratorTypes.END)
+            .gameMode(GameModes.CREATIVE)
+            .build();
 
         this.game.getRegistry().getWorldBuilder()
-                .name("endover")
-                .enabled(true)
-                .loadsOnStartup(true)
-                .keepsSpawnLoaded(true)
-                .dimensionType(DimensionTypes.END)
-                .generator(GeneratorTypes.OVERWORLD)
-                .gameMode(GameModes.CREATIVE)
-                .build();
+            .name("endover")
+            .enabled(true)
+            .loadsOnStartup(true)
+            .keepsSpawnLoaded(true)
+            .dimensionType(DimensionTypes.END)
+            .generator(GeneratorTypes.OVERWORLD)
+            .gameMode(GameModes.CREATIVE)
+            .build();
 
         this.game.getRegistry().getWorldBuilder()
-                .name("endnether")
-                .enabled(true)
-                .loadsOnStartup(true)
-                .keepsSpawnLoaded(true)
-                .dimensionType(DimensionTypes.END)
-                .generator(GeneratorTypes.NETHER)
-                .gameMode(GameModes.CREATIVE)
-                .build();
+            .name("endnether")
+            .enabled(true)
+            .loadsOnStartup(true)
+            .keepsSpawnLoaded(true)
+            .dimensionType(DimensionTypes.END)
+            .generator(GeneratorTypes.NETHER)
+            .gameMode(GameModes.CREATIVE)
+            .build();
+
+        game.getRegistry().getWorldBuilder()
+            .name("skylands")
+            .enabled(true)
+            .loadsOnStartup(true)
+            .keepsSpawnLoaded(true)
+            .dimensionType(DimensionTypes.OVERWORLD)
+            .generator(GeneratorTypes.OVERWORLD)
+            .gameMode(GameModes.CREATIVE)
+            .build();
 
         this.game.getCommandDispatcher().register(this, CommandSpec.builder()
-                .description(Texts.of("Teleports a player to another world"))
-                .arguments(seq(playerOrSource(Texts.of("target"), this.game), onlyOne(world(Texts.of("world"), this.game))))
-                .executor(new CommandExecutor() {
-                    @Override
-                    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-                        final Optional<WorldProperties> optWorldProperties = args.getOne("world");
-                        final Optional<World> optWorld = game.getServer().getWorld(optWorldProperties.get().getWorldName());
-                        if (!optWorld.isPresent()) {
-                            throw new CommandException(Texts.of("World [", Texts.of(TextColors.AQUA, optWorldProperties.get().getWorldName()), "] "
-                                    + "was not found."));
-                        }
-                        for (Player target : args.<Player>getAll("target")) {
-                            target.transferToWorld(optWorld.get().getName(), optWorld.get().getProperties()
-                                    .getSpawnPosition().toDouble());
-                        }
-                        return CommandResult.success();
+            .description(Texts.of("Teleports a player to another world"))
+            .arguments(seq(playerOrSource(Texts.of("target"), this.game), onlyOne(world(Texts.of("world"), this.game))))
+            .executor(new CommandExecutor() {
+                @Override
+                public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+                    final Optional<WorldProperties> optWorldProperties = args.getOne("world");
+                    final Optional<World> optWorld = game.getServer().getWorld(optWorldProperties.get().getWorldName());
+                    if (!optWorld.isPresent()) {
+                        throw new CommandException(Texts.of("World [", Texts.of(TextColors.AQUA, optWorldProperties.get().getWorldName()), "] "
+                            + "was not found."));
                     }
-                })
-                .build()
-                , "tpworld");
+                    for (Player target : args.<Player>getAll("target")) {
+                        target.transferToWorld(optWorld.get().getName(), optWorld.get().getProperties()
+                            .getSpawnPosition().toDouble());
+                    }
+                    return CommandResult.success();
+                }
+            })
+            .build()
+            , "tpworld");
 
         this.game.getCommandDispatcher().register(this, new CommandSpawn(this.game), "spawn");
 
@@ -198,9 +208,9 @@ public class WorldsTest {
                             spawnCoordinates = world.getProperties().getSpawnPosition();
 
                             source.sendMessage(Texts.of("World [", TextColors.AQUA, world.getName(), TextColors.WHITE,
-                                    "]: spawn -> x [", TextColors.GREEN, spawnCoordinates.getX(), TextColors.WHITE, "] | y [", TextColors.GREEN,
-                                    spawnCoordinates.getY(), TextColors.WHITE, "] | z [", TextColors.GREEN, spawnCoordinates.getZ(), TextColors
-                                            .WHITE, "]."));
+                                "]: spawn -> x [", TextColors.GREEN, spawnCoordinates.getX(), TextColors.WHITE, "] | y [", TextColors.GREEN,
+                                spawnCoordinates.getY(), TextColors.WHITE, "] | z [", TextColors.GREEN, spawnCoordinates.getZ(), TextColors
+                                    .WHITE, "]."));
                             break;
                         case "-s":
                             world = player.getWorld();
@@ -221,10 +231,10 @@ public class WorldsTest {
                             world.getProperties().setSpawnPosition(spawnCoordinates);
 
                             source.sendMessage(Texts.of("World [", TextColors.AQUA, world.getName(), TextColors.WHITE,
-                                    "]: spawn set to -> x [", TextColors.GREEN, spawnCoordinates.getX(), TextColors.WHITE, "] | y [", TextColors
-                                            .GREEN,
-                                    spawnCoordinates.getY(), TextColors.WHITE, "] | z [", TextColors.GREEN, spawnCoordinates.getZ(), TextColors
-                                            .WHITE, "]."));
+                                "]: spawn set to -> x [", TextColors.GREEN, spawnCoordinates.getX(), TextColors.WHITE, "] | y [", TextColors
+                                    .GREEN,
+                                spawnCoordinates.getY(), TextColors.WHITE, "] | z [", TextColors.GREEN, spawnCoordinates.getZ(), TextColors
+                                    .WHITE, "]."));
                             break;
                     }
                 }
