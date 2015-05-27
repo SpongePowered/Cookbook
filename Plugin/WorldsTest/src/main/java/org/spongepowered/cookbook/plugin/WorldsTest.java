@@ -15,7 +15,6 @@ import org.spongepowered.api.entity.player.gamemode.GameModes;
 import org.spongepowered.api.event.Subscribe;
 import org.spongepowered.api.event.state.ServerStartingEvent;
 import org.spongepowered.api.plugin.Plugin;
-import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColors;
@@ -39,11 +38,10 @@ public class WorldsTest {
 
     @Inject private Logger logger;
     @Inject private Game game;
-    @Inject private PluginContainer instance;
 
     @Subscribe
     public void onServerStarting(ServerStartingEvent event) {
-        game.getRegistry().getWorldBuilder()
+        this.game.getRegistry().getWorldBuilder()
                 .name("nether")
                 .enabled(true)
                 .loadsOnStartup(true)
@@ -53,7 +51,7 @@ public class WorldsTest {
                 .gameMode(GameModes.CREATIVE)
                 .build();
 
-        game.getRegistry().getWorldBuilder()
+        this.game.getRegistry().getWorldBuilder()
                 .name("end")
                 .enabled(true)
                 .loadsOnStartup(true)
@@ -63,7 +61,7 @@ public class WorldsTest {
                 .gameMode(GameModes.CREATIVE)
                 .build();
 
-        game.getRegistry().getWorldBuilder()
+        this.game.getRegistry().getWorldBuilder()
                 .name("overend")
                 .enabled(true)
                 .loadsOnStartup(true)
@@ -73,7 +71,7 @@ public class WorldsTest {
                 .gameMode(GameModes.CREATIVE)
                 .build();
 
-        game.getRegistry().getWorldBuilder()
+        this.game.getRegistry().getWorldBuilder()
                 .name("overnether")
                 .enabled(true)
                 .loadsOnStartup(true)
@@ -83,7 +81,7 @@ public class WorldsTest {
                 .gameMode(GameModes.CREATIVE)
                 .build();
 
-        game.getRegistry().getWorldBuilder()
+        this.game.getRegistry().getWorldBuilder()
                 .name("netherover")
                 .enabled(true)
                 .loadsOnStartup(true)
@@ -93,7 +91,7 @@ public class WorldsTest {
                 .gameMode(GameModes.CREATIVE)
                 .build();
 
-        game.getRegistry().getWorldBuilder()
+        this.game.getRegistry().getWorldBuilder()
                 .name("netherend")
                 .enabled(true)
                 .loadsOnStartup(true)
@@ -103,7 +101,7 @@ public class WorldsTest {
                 .gameMode(GameModes.CREATIVE)
                 .build();
 
-        game.getRegistry().getWorldBuilder()
+        this.game.getRegistry().getWorldBuilder()
                 .name("endover")
                 .enabled(true)
                 .loadsOnStartup(true)
@@ -113,7 +111,7 @@ public class WorldsTest {
                 .gameMode(GameModes.CREATIVE)
                 .build();
 
-        game.getRegistry().getWorldBuilder()
+        this.game.getRegistry().getWorldBuilder()
                 .name("endnether")
                 .enabled(true)
                 .loadsOnStartup(true)
@@ -123,10 +121,10 @@ public class WorldsTest {
                 .gameMode(GameModes.CREATIVE)
                 .build();
 
-        game.getCommandDispatcher().register(instance, CommandSpec.builder()
-                .setDescription(Texts.of("Teleports a player to another world"))
-                .setArguments(seq(playerOrSource(Texts.of("target"), game), onlyOne(world(Texts.of("world"), game))))
-                .setExecutor(new CommandExecutor() {
+        this.game.getCommandDispatcher().register(this, CommandSpec.builder()
+                .description(Texts.of("Teleports a player to another world"))
+                .arguments(seq(playerOrSource(Texts.of("target"), this.game), onlyOne(world(Texts.of("world"), this.game))))
+                .executor(new CommandExecutor() {
                     @Override
                     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
                         final Optional<WorldProperties> optWorldProperties = args.getOne("world");
@@ -146,7 +144,7 @@ public class WorldsTest {
                 .build()
                 , "tpworld");
 
-        game.getCommandDispatcher().register(instance, new CommandSpawn(game), "spawn");
+        this.game.getCommandDispatcher().register(this, new CommandSpawn(this.game), "spawn");
 
     }
 
@@ -199,7 +197,7 @@ public class WorldsTest {
                                 world = player.getWorld();
                                 // (Player) /spawn -i <world_name>
                             } else {
-                                final Optional<World> optWorldCandidate = game.getServer().getWorld(args[1]);
+                                final Optional<World> optWorldCandidate = this.game.getServer().getWorld(args[1]);
                                 if (optWorldCandidate.isPresent()) {
                                     world = optWorldCandidate.get();
                                 } else {
