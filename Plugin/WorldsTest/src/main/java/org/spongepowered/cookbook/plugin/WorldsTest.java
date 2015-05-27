@@ -72,16 +72,6 @@ public class WorldsTest {
                 .build();
 
         this.game.getRegistry().getWorldBuilder()
-                .name("overnether")
-                .enabled(true)
-                .loadsOnStartup(true)
-                .keepsSpawnLoaded(true)
-                .dimensionType(DimensionTypes.OVERWORLD)
-                .generator(GeneratorTypes.NETHER)
-                .gameMode(GameModes.CREATIVE)
-                .build();
-
-        this.game.getRegistry().getWorldBuilder()
                 .name("netherover")
                 .enabled(true)
                 .loadsOnStartup(true)
@@ -137,7 +127,6 @@ public class WorldsTest {
                             target.transferToWorld(optWorld.get().getName(), optWorld.get().getProperties()
                                     .getSpawnPosition().toDouble());
                         }
-
                         return CommandResult.success();
                     }
                 })
