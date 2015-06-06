@@ -14,11 +14,8 @@ import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.entity.player.gamemode.GameModes;
 import org.spongepowered.api.event.Subscribe;
 import org.spongepowered.api.event.state.ServerStartingEvent;
-<<<<<<< HEAD
-=======
-import org.spongepowered.api.extra.SkylandsWorldGeneratorModifier;
 import org.spongepowered.api.event.world.WorldLoadEvent;
->>>>>>> 30897eb... Get skylands to generate
+import org.spongepowered.api.extra.skylands.SkylandsWorldGeneratorModifier;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
