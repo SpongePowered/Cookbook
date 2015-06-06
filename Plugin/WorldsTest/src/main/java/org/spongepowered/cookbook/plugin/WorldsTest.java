@@ -14,6 +14,11 @@ import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.entity.player.gamemode.GameModes;
 import org.spongepowered.api.event.Subscribe;
 import org.spongepowered.api.event.state.ServerStartingEvent;
+<<<<<<< HEAD
+=======
+import org.spongepowered.api.extra.SkylandsWorldGeneratorModifier;
+import org.spongepowered.api.event.world.WorldLoadEvent;
+>>>>>>> 30897eb... Get skylands to generate
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
@@ -29,6 +34,7 @@ import org.spongepowered.api.world.DimensionTypes;
 import org.spongepowered.api.world.GeneratorTypes;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.gen.WorldGenerator;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 import java.util.List;
@@ -145,6 +151,17 @@ public class WorldsTest {
 
         this.game.getCommandDispatcher().register(this, new CommandSpawn(this.game), "spawn");
 
+    }
+
+    @Subscribe
+    public void onWorldLoad(WorldLoadEvent event) {
+        final World world = event.getWorld();
+        if (world.getName().equals("skylands")) {
+            final SkylandsWorldGeneratorModifier skylandsModifier = new SkylandsWorldGeneratorModifier();
+            final WorldGenerator normalGenerator = world.getWorldGenerator();
+            skylandsModifier.modifyWorldGenerator(null, null, normalGenerator);
+            world.setWorldGenerator(normalGenerator);
+        }
     }
 
     private static class CommandSpawn implements CommandCallable {
