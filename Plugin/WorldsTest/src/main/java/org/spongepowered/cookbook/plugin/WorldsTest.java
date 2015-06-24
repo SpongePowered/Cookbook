@@ -81,7 +81,7 @@ public class WorldsTest {
                 .enabled(true)
                 .loadsOnStartup(true)
                 .keepsSpawnLoaded(true)
-                .dimensionType(DimensionTypes.OVERWORLD)
+                .dimensionType(DimensionTypes.NETHER)
                 .generator(GeneratorTypes.NETHER)
                 .generatorModifiers(skylandsModifier)
                 .gameMode(GameModes.CREATIVE)
