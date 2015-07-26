@@ -54,7 +54,7 @@ public class TestSuite {
     }
 
     private static Result runTests() {
-        return JUnitCore.runClasses(BiomeBufferTest.class);
+        return JUnitCore.runClasses(BiomeBufferTest.class, BlockBufferTest.class);
     }
 
     private class Commands implements CommandCallable {
