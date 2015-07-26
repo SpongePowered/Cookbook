@@ -3,6 +3,7 @@ package org.spongepowered.cookbook.plugin;
 import com.flowpowered.math.vector.Vector2i;
 import org.junit.Assert;
 import org.junit.Test;
+import org.spongepowered.api.util.DiscreteTransform2;
 import org.spongepowered.api.util.PositionOutOfBoundsException;
 import org.spongepowered.api.world.biome.BiomeType;
 import org.spongepowered.api.world.biome.BiomeTypes;
@@ -26,7 +27,7 @@ public class BiomeBufferTest {
         BiomeTypes.DESERT,
         BiomeTypes.HELL,
         BiomeTypes.MESA,
-        BiomeTypes.SWAMPLAND,
+        BiomeTypes.SWAMPLAND
     };
 
     @Test
@@ -71,6 +72,34 @@ public class BiomeBufferTest {
         Assert.assertEquals(new Vector2i(11, 8), relative.getBiomeMax());
         Assert.assertEquals(new Vector2i(12, 9), relative.getBiomeSize());
         testBuffer(relative);
+    }
+
+    @Test
+    public void testBiomeBufferRotate() {
+        final MutableBiomeArea buffer = TestSuite.EXTENT_BUFFER_FACTORY.createBiomeBuffer(2, 2);
+        buffer.setBiome(0, 0, TEST_BIOMES[0]);
+        buffer.setBiome(1, 0, TEST_BIOMES[1]);
+        buffer.setBiome(0, 1, TEST_BIOMES[2]);
+        buffer.setBiome(1, 1, TEST_BIOMES[3]);
+        // 90 degrees
+        final DiscreteTransform2 _90degrees = DiscreteTransform2.fromRotation(1, new Vector2i(0, 0), true);
+        MutableBiomeArea rotated = buffer.getBiomeView(_90degrees);
+        Assert.assertEquals(TEST_BIOMES[2], rotated.getBiome(0, 0));
+        Assert.assertEquals(TEST_BIOMES[0], rotated.getBiome(1, 0));
+        Assert.assertEquals(TEST_BIOMES[3], rotated.getBiome(0, 1));
+        Assert.assertEquals(TEST_BIOMES[1], rotated.getBiome(1, 1));
+        // 180 degrees
+        rotated = rotated.getBiomeView(_90degrees);
+        Assert.assertEquals(TEST_BIOMES[3], rotated.getBiome(0, 0));
+        Assert.assertEquals(TEST_BIOMES[2], rotated.getBiome(1, 0));
+        Assert.assertEquals(TEST_BIOMES[1], rotated.getBiome(0, 1));
+        Assert.assertEquals(TEST_BIOMES[0], rotated.getBiome(1, 1));
+        // 270 degrees
+        rotated = rotated.getBiomeView(_90degrees);
+        Assert.assertEquals(TEST_BIOMES[1], rotated.getBiome(0, 0));
+        Assert.assertEquals(TEST_BIOMES[3], rotated.getBiome(1, 0));
+        Assert.assertEquals(TEST_BIOMES[0], rotated.getBiome(0, 1));
+        Assert.assertEquals(TEST_BIOMES[2], rotated.getBiome(1, 1));
     }
 
     private void testBuffer(BiomeArea buffer) {
