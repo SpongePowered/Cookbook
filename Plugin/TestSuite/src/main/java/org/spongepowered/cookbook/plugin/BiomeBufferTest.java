@@ -82,7 +82,7 @@ public class BiomeBufferTest {
         buffer.setBiome(0, 1, TEST_BIOMES[2]);
         buffer.setBiome(1, 1, TEST_BIOMES[3]);
         // 90 degrees
-        final DiscreteTransform2 _90degrees = DiscreteTransform2.fromRotation(1, new Vector2i(0, 0), true);
+        final DiscreteTransform2 _90degrees = DiscreteTransform2.rotationAroundCenter(1, buffer.getBiomeSize());
         MutableBiomeArea rotated = buffer.getBiomeView(_90degrees);
         Assert.assertEquals(TEST_BIOMES[2], rotated.getBiome(0, 0));
         Assert.assertEquals(TEST_BIOMES[0], rotated.getBiome(1, 0));

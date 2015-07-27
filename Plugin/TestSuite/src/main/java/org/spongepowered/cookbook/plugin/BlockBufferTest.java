@@ -5,6 +5,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockTypes;
+import org.spongepowered.api.util.Axis;
+import org.spongepowered.api.util.DiscreteTransform3;
 import org.spongepowered.api.util.PositionOutOfBoundsException;
 import org.spongepowered.api.world.extent.BlockVolume;
 import org.spongepowered.api.world.extent.ImmutableBlockVolume;
@@ -71,6 +73,42 @@ public class BlockBufferTest {
         Assert.assertEquals(new Vector3i(11, 8, 15), relative.getBlockMax());
         Assert.assertEquals(new Vector3i(12, 9, 16), relative.getBlockSize());
         testBuffer(relative);
+    }
+
+    @Test
+    public void testBlockBufferRotate() {
+        final MutableBlockVolume buffer = TestSuite.EXTENT_BUFFER_FACTORY.createBlockBuffer(3, 2, 1);
+        buffer.setBlock(0, 0, 0, TEST_BLOCKS[0]);
+        buffer.setBlock(1, 0, 0, TEST_BLOCKS[1]);
+        buffer.setBlock(2, 0, 0, TEST_BLOCKS[2]);
+        buffer.setBlock(0, 1, 0, TEST_BLOCKS[3]);
+        buffer.setBlock(1, 1, 0, TEST_BLOCKS[4]);
+        buffer.setBlock(2, 1, 0, TEST_BLOCKS[5]);
+        // 90 degrees
+        final DiscreteTransform3 _90degrees = DiscreteTransform3.rotationAroundCenter(1, Axis.Y, buffer.getBlockSize());
+        MutableBlockVolume rotated = buffer.getBlockView(_90degrees);
+        Assert.assertEquals(TEST_BLOCKS[0], rotated.getBlock(1, 0, -1));
+        Assert.assertEquals(TEST_BLOCKS[1], rotated.getBlock(1, 0, 0));
+        Assert.assertEquals(TEST_BLOCKS[2], rotated.getBlock(1, 0, 1));
+        Assert.assertEquals(TEST_BLOCKS[3], rotated.getBlock(1, 1, -1));
+        Assert.assertEquals(TEST_BLOCKS[4], rotated.getBlock(1, 1, 0));
+        Assert.assertEquals(TEST_BLOCKS[5], rotated.getBlock(1, 1, 1));
+        // 180 degrees
+        rotated = rotated.getBlockView(_90degrees);
+        Assert.assertEquals(TEST_BLOCKS[0], rotated.getBlock(2, 0, 0));
+        Assert.assertEquals(TEST_BLOCKS[1], rotated.getBlock(1, 0, 0));
+        Assert.assertEquals(TEST_BLOCKS[2], rotated.getBlock(0, 0, 0));
+        Assert.assertEquals(TEST_BLOCKS[3], rotated.getBlock(2, 1, 0));
+        Assert.assertEquals(TEST_BLOCKS[4], rotated.getBlock(1, 1, 0));
+        Assert.assertEquals(TEST_BLOCKS[5], rotated.getBlock(0, 1, 0));
+        // 270 degrees
+        rotated = rotated.getBlockView(_90degrees);
+        Assert.assertEquals(TEST_BLOCKS[0], rotated.getBlock(1, 0, 1));
+        Assert.assertEquals(TEST_BLOCKS[1], rotated.getBlock(1, 0, 0));
+        Assert.assertEquals(TEST_BLOCKS[2], rotated.getBlock(1, 0, -1));
+        Assert.assertEquals(TEST_BLOCKS[3], rotated.getBlock(1, 1, 1));
+        Assert.assertEquals(TEST_BLOCKS[4], rotated.getBlock(1, 1, 0));
+        Assert.assertEquals(TEST_BLOCKS[5], rotated.getBlock(1, 1, -1));
     }
 
     private void testBuffer(BlockVolume buffer) {
