@@ -45,7 +45,7 @@ public class WorldsTest {
         final SkylandsWorldGeneratorModifier skylandsModifier = new SkylandsWorldGeneratorModifier();
         this.game.getRegistry().registerWorldGeneratorModifier(skylandsModifier);
 
-        this.game.getRegistry().getWorldBuilder()
+        this.game.getRegistry().createWorldBuilder()
                 .name("end")
                 .enabled(true)
                 .loadsOnStartup(true)
@@ -55,7 +55,7 @@ public class WorldsTest {
                 .gameMode(GameModes.CREATIVE)
                 .build();
 
-        this.game.getRegistry().getWorldBuilder()
+        this.game.getRegistry().createWorldBuilder()
                 .name("nether")
                 .enabled(true)
                 .loadsOnStartup(true)
@@ -65,7 +65,7 @@ public class WorldsTest {
                 .gameMode(GameModes.CREATIVE)
                 .build();
 
-        this.game.getRegistry().getWorldBuilder()
+        this.game.getRegistry().createWorldBuilder()
                 .name("skylands")
                 .enabled(true)
                 .loadsOnStartup(true)
@@ -76,7 +76,7 @@ public class WorldsTest {
                 .gameMode(GameModes.CREATIVE)
                 .build();
 
-        this.game.getRegistry().getWorldBuilder()
+        this.game.getRegistry().createWorldBuilder()
                 .name("skyhell")
                 .enabled(true)
                 .loadsOnStartup(true)
@@ -142,10 +142,10 @@ public class WorldsTest {
         }
 
         @Override
-        public Optional<CommandResult> process(CommandSource source, String arguments) throws CommandException {
+        public CommandResult process(CommandSource source, String arguments) throws CommandException {
             if (source instanceof Player) {
                 if (!testPermission(source)) {
-                    return Optional.of(CommandResult.empty());
+                    return CommandResult.empty();
                 }
                 final Player player = (Player) source;
                 final String[] args = arguments.split(" ");
@@ -169,7 +169,7 @@ public class WorldsTest {
                                 world = optWorldCandidate.get();
                             } else {
                                 source.sendMessage(Texts.of("World [", TextColors.AQUA, args[1], TextColors.WHITE, "] was not found"));
-                                return Optional.of(CommandResult.success());
+                                return CommandResult.success();
                             }
                         }
 
@@ -191,7 +191,7 @@ public class WorldsTest {
                                 spawnCoordinates = new Vector3i(Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
                             } catch (Exception ex) {
                                 source.sendMessage(Texts.of("Invalid spawn coordinates, must be in numeric format. Ex. /spawn -s 0 0 0."));
-                                return Optional.of(CommandResult.success());
+                                return CommandResult.success();
                             }
                         }
 
@@ -205,7 +205,7 @@ public class WorldsTest {
                     }
                 }
             }
-            return Optional.of(CommandResult.success());
+            return CommandResult.success();
         }
 
         @Override
