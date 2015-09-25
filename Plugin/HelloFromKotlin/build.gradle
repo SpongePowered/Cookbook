@@ -1,0 +1,52 @@
+// Kotlin version. Each minor (0.x) revision contains breaking changes, as the
+// language is still in development.
+def kotlin_version = '0.13.1513'
+
+buildscript {
+    // I don't know how to get kotlin_version in this scope.
+    ext.kotlin_version = '0.13.1513'
+    repositories {
+        jcenter()
+        maven {
+            url 'http://oss.sonatype.org/content/repositories/snapshots'
+        }
+        jcenter()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.2'
+    }
+}
+
+apply plugin: 'kotlin'
+// Kotlin's stdlib and such need to be shadowed in.
+apply plugin: 'com.github.johnrengelman.shadow'
+
+repositories {
+    jcenter()
+
+    maven {
+        name 'Sponge maven repo'
+        url 'http://repo.spongepowered.org/maven'
+    }
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-runtime:$kotlin_version"
+    compile 'org.spongepowered:spongeapi:2.1-SNAPSHOT'
+}
+
+sourceSets {
+    // Kotlin finds code from the java source directory, so rename it to kotlin
+    main.java.srcDirs += 'src/main/kotlin'
+}
+
+shadowJar {
+    dependencies {
+        include dependency("org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version")
+        include dependency("org.jetbrains.kotlin:kotlin-reflect:$kotlin_version")
+        include dependency("org.jetbrains.kotlin:kotlin-runtime:$kotlin_version")
+    }
+}
