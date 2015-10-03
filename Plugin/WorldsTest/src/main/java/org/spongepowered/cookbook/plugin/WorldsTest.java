@@ -10,10 +10,10 @@ import com.google.common.base.Optional;
 import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
-import org.spongepowered.api.entity.player.Player;
-import org.spongepowered.api.entity.player.gamemode.GameModes;
-import org.spongepowered.api.event.Subscribe;
-import org.spongepowered.api.event.state.ServerAboutToStartEvent;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.gamemode.GameModes;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.game.state.GameAboutToStartServerEvent;
 import org.spongepowered.api.extra.skylands.SkylandsWorldGeneratorModifier;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.text.Text;
@@ -40,8 +40,8 @@ public class WorldsTest {
     @Inject private Logger logger;
     @Inject private Game game;
 
-    @Subscribe
-    public void onServerAboutToStart(ServerAboutToStartEvent event) {
+    @Listener
+    public void onServerAboutToStart(GameAboutToStartServerEvent e) {
         final SkylandsWorldGeneratorModifier skylandsModifier = new SkylandsWorldGeneratorModifier();
         this.game.getRegistry().registerWorldGeneratorModifier(skylandsModifier);
 
