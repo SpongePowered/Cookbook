@@ -102,9 +102,9 @@ public class HelloListener : EventListener<ClientConnectionEvent.Join> {
                 + "Kotlin"
                 .gold()
                 .bold()
-                .hover(TextActions.showText("https://github.com/Sponge/Cookbook/tree/master/Plugin/HelloFromKotlin"
+                .hover(TextActions.showText("https://github.com/SpongePowered/Cookbook/tree/master/Plugin/HelloFromKotlin"
                         .blue().underline()))
-                .click(TextActions.openUrl(URL("https://github.com/Sponge/Cookbook/tree/master/Plugin/HelloFromKotlin")))
+                .click(TextActions.openUrl(URL("https://github.com/SpongePowered/Cookbook/tree/master/Plugin/HelloFromKotlin")))
                 + "!".green())
 
     }
