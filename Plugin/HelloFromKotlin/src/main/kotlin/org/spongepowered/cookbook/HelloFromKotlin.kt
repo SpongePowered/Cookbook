@@ -20,19 +20,15 @@ import java.net.URL
 public class HelloFromKotlin {
 
     // In Kotlin, types are non-nullable by default. Normally, you would have
-    // declared this value as "val game: Game?" to indicate nullability, which
+    // declared this value as "var game: Game?" to indicate nullability, which
     // is a bit of a pain when going to use the type -- you have to include
     // nullability checks even if the variable is injected. This nullable
     // type used to be necessary to allow a field with no value set and no
     // setter methods. In Kotlin M13, they introduced the "lateinit" keyword
     // to indicate that it's a non-nullable type, but has a value not set at
     // compile time or with a setter -- for instance, by dependency injection.
-    @Inject lateinit val game: Game
-
-    // There is also a distinction between "val" and "var" -- final vs. not.
-    // This is to help lessen the burden of having to remember to put final
-    // modifiers everywhere, because it really is good practice to omit them.
-    @Inject lateinit val logger: Logger
+    @Inject lateinit var game: Game
+    @Inject lateinit var logger: Logger
 
     // Kotlin has a keyword for a function, "fun". Could have guessed that.
     fun getVersion(): String {
@@ -57,7 +53,7 @@ public class HelloFromKotlin {
     }
 
     // Listeners are still painless.
-    @Listener fun serverStarting(_: GameAboutToStartServerEvent) {
+    @Listener fun serverStarting(event: GameAboutToStartServerEvent) {
 
         // Note the semicolons! (Oh wait, the compiler knows when you don't
         // need them.)
@@ -106,9 +102,9 @@ public class HelloListener : EventListener<ClientConnectionEvent.Join> {
                 + "Kotlin"
                 .gold()
                 .bold()
-                .hover(TextActions.showText("https://github.com/Sponge/Cookbook/tree/master/Plugin/HelloFromKotlin"
+                .hover(TextActions.showText("https://github.com/SpongePowered/Cookbook/tree/master/Plugin/HelloFromKotlin"
                         .blue().underline()))
-                .click(TextActions.openUrl(URL("https://github.com/Sponge/Cookbook/tree/master/Plugin/HelloFromKotlin")))
+                .click(TextActions.openUrl(URL("https://github.com/SpongePowered/Cookbook/tree/master/Plugin/HelloFromKotlin")))
                 + "!".green())
 
     }
