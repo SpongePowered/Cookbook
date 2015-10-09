@@ -45,8 +45,9 @@ fun Text.reset(): Text = Texts.builder().style(TextStyles.RESET).append(this).to
 fun Text.strikethrough(): Text = Texts.builder().style(TextStyles.STRIKETHROUGH).append(this).toText()
 fun Text.underline(): Text = Texts.builder().style(TextStyles.UNDERLINE).append(this).toText()
 
-fun Text.plus(other: Text): Text = Texts.builder().append(this).append(other).toText()
-fun Text.plus(other: String): Text = Texts.builder().append(this).append(Texts.of(other)).toText()
+// The operator keyword marks extension functions used as unary or binary operators.
+operator fun Text.plus(other: Text): Text = Texts.builder().append(this).append(other).toText()
+operator fun Text.plus(other: String): Text = Texts.builder().append(this).append(Texts.of(other)).toText()
 
 fun Text.click<T : ClickAction<*>>(action: T): Text = Texts.builder().append(this).onClick(action).toText()
 fun Text.hover<T : HoverAction<*>>(action: T): Text = Texts.builder().append(this).onHover(action).toText()

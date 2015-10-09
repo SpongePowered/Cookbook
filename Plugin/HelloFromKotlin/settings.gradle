@@ -1,2 +1,3 @@
 rootProject.name = 'HelloFromKotlin'
+kotlinVersion = '0.14.451'
 

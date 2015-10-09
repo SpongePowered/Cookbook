@@ -1,10 +1,4 @@
-// Kotlin version. Each minor (0.x) revision contains breaking changes, as the
-// language is still in development.
-def kotlin_version = '0.13.1513'
-
 buildscript {
-    // I don't know how to get kotlin_version in this scope.
-    ext.kotlin_version = '0.13.1513'
     repositories {
         jcenter()
         maven {
@@ -13,7 +7,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.2'
     }
 }
@@ -32,9 +26,9 @@ repositories {
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-    compile "org.jetbrains.kotlin:kotlin-runtime:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
+    compile "org.jetbrains.kotlin:kotlin-runtime:$kotlinVersion"
     compile 'org.spongepowered:spongeapi:2.1-SNAPSHOT'
 }
 
@@ -45,8 +39,8 @@ sourceSets {
 
 shadowJar {
     dependencies {
-        include dependency("org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version")
-        include dependency("org.jetbrains.kotlin:kotlin-reflect:$kotlin_version")
-        include dependency("org.jetbrains.kotlin:kotlin-runtime:$kotlin_version")
+        include dependency("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
+        include dependency("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
+        include dependency("org.jetbrains.kotlin:kotlin-runtime:$kotlinVersion")
     }
 }
