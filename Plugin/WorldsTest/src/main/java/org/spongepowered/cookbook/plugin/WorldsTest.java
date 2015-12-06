@@ -1,9 +1,9 @@
 package org.spongepowered.cookbook.plugin;
 
-import static org.spongepowered.api.util.command.args.GenericArguments.onlyOne;
-import static org.spongepowered.api.util.command.args.GenericArguments.playerOrSource;
-import static org.spongepowered.api.util.command.args.GenericArguments.seq;
-import static org.spongepowered.api.util.command.args.GenericArguments.world;
+import static org.spongepowered.api.command.args.GenericArguments.onlyOne;
+import static org.spongepowered.api.command.args.GenericArguments.playerOrSource;
+import static org.spongepowered.api.command.args.GenericArguments.seq;
+import static org.spongepowered.api.command.args.GenericArguments.world;
 
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.base.Optional;
@@ -19,13 +19,13 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.util.command.CommandCallable;
-import org.spongepowered.api.util.command.CommandException;
-import org.spongepowered.api.util.command.CommandResult;
-import org.spongepowered.api.util.command.CommandSource;
-import org.spongepowered.api.util.command.args.CommandContext;
-import org.spongepowered.api.util.command.spec.CommandExecutor;
-import org.spongepowered.api.util.command.spec.CommandSpec;
+import org.spongepowered.api.command.CommandCallable;
+import org.spongepowered.api.command.CommandException;
+import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.spec.CommandExecutor;
+import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.world.DimensionTypes;
 import org.spongepowered.api.world.GeneratorTypes;
 import org.spongepowered.api.world.Location;
@@ -88,26 +88,26 @@ public class WorldsTest {
                 .build();
 
         this.game.getCommandDispatcher().register(this, CommandSpec.builder()
-                .description(Texts.of("Teleports a player to another world"))
-                .arguments(seq(playerOrSource(Texts.of("target"), this.game), onlyOne(world(Texts.of("world"), this.game))))
-                .permission("worldstest.command.tpworld")
-                .executor(new CommandExecutor() {
-                    @Override
-                    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-                        final Optional<WorldProperties> optWorldProperties = args.getOne("world");
-                        final Optional<World> optWorld = game.getServer().getWorld(optWorldProperties.get().getWorldName());
-                        if (!optWorld.isPresent()) {
-                            throw new CommandException(Texts.of("World [", Texts.of(TextColors.AQUA, optWorldProperties.get().getWorldName()), "] "
-                                    + "was not found."));
-                        }
-                        for (Player target : args.<Player>getAll("target")) {
-                            target.setLocation(new Location(optWorld.get(), optWorld.get().getProperties()
-                                    .getSpawnPosition()));
-                        }
-                        return CommandResult.success();
-                    }
-                })
-                .build()
+                        .description(Texts.of("Teleports a player to another world"))
+                        .arguments(seq(playerOrSource(Texts.of("target"), this.game), onlyOne(world(Texts.of("world"), this.game))))
+                        .permission("worldstest.command.tpworld")
+                        .executor(new CommandExecutor() {
+                            @Override
+                            public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+                                final Optional<WorldProperties> optWorldProperties = args.getOne("world");
+                                final Optional<World> optWorld = game.getServer().getWorld(optWorldProperties.get().getWorldName());
+                                if (!optWorld.isPresent()) {
+                                    throw new CommandException(Texts.of("World [", Texts.of(TextColors.AQUA, optWorldProperties.get().getWorldName()), "] "
+                                            + "was not found."));
+                                }
+                                for (Player target : args.<Player>getAll("target")) {
+                                    target.setLocation(new Location(optWorld.get(), optWorld.get().getProperties()
+                                            .getSpawnPosition()));
+                                }
+                                return CommandResult.success();
+                            }
+                        })
+                        .build()
                 , "tpworld");
 
         this.game.getCommandDispatcher().register(this, new CommandSpawn(this.game), "spawn");
