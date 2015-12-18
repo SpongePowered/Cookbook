@@ -49,9 +49,9 @@ fun Text.underline(): Text = Texts.builder().style(TextStyles.UNDERLINE).append(
 operator fun Text.plus(other: Text): Text = Texts.builder().append(this).append(other).toText()
 operator fun Text.plus(other: String): Text = Texts.builder().append(this).append(Texts.of(other)).toText()
 
-fun Text.click<T : ClickAction<*>>(action: T): Text = Texts.builder().append(this).onClick(action).toText()
-fun Text.hover<T : HoverAction<*>>(action: T): Text = Texts.builder().append(this).onHover(action).toText()
-fun Text.shiftClick<T : ShiftClickAction<*>>(action: T): Text = Texts.builder().append(this).onShiftClick(action).toText()
+fun <T : ClickAction<*>> Text.click(action: T): Text = Texts.builder().append(this).onClick(action).toText()
+fun <T : HoverAction<*>> Text.hover(action: T): Text = Texts.builder().append(this).onHover(action).toText()
+fun <T : ShiftClickAction<*>> Text.shiftClick(action: T): Text = Texts.builder().append(this).onShiftClick(action).toText()
 
 fun String.aqua(): Text = Texts.of(this).aqua()
 fun String.black(): Text = Texts.of(this).black()
@@ -77,6 +77,6 @@ fun String.reset(): Text = Texts.of(this).reset()
 fun String.strikethrough(): Text = Texts.of(this).strikethrough()
 fun String.underline(): Text = Texts.of(this).underline()
 
-fun String.click<T : ClickAction<*>>(action: T): Text = Texts.of(this).click(action)
-fun String.hover<T : HoverAction<*>>(action: T): Text = Texts.of(this).hover(action)
-fun String.shiftClick<T : ShiftClickAction<*>>(action: T): Text = Texts.of(this).shiftClick(action)
+fun <T : ClickAction<*>> String.click(action: T): Text = Texts.of(this).click(action)
+fun <T : HoverAction<*>> String.hover(action: T): Text = Texts.of(this).hover(action)
+fun <T : ShiftClickAction<*>> String.shiftClick(action: T): Text = Texts.of(this).shiftClick(action)

@@ -3,6 +3,8 @@ package org.spongepowered.cookbook
 import com.google.inject.Inject
 import org.slf4j.Logger
 import org.spongepowered.api.Game
+import org.spongepowered.api.command.CommandResult
+import org.spongepowered.api.command.spec.CommandSpec
 import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.event.EventListener
 import org.spongepowered.api.event.Listener
@@ -11,8 +13,6 @@ import org.spongepowered.api.event.network.ClientConnectionEvent
 import org.spongepowered.api.plugin.Plugin
 import org.spongepowered.api.text.action.TextActions
 import org.spongepowered.api.text.title.Titles
-import org.spongepowered.api.util.command.CommandResult
-import org.spongepowered.api.util.command.spec.CommandSpec
 import java.net.URL
 
 // Plugins are declared in basically the same way as Java.
@@ -58,7 +58,7 @@ public class HelloFromKotlin {
         // Note the semicolons! (Oh wait, the compiler knows when you don't
         // need them.)
         logger.info("Hello from Kotlin <3 (This is version ${getVersion()}" +
-                " running on ${game.platform.name}" +
+                " running on ${game.platform.implementation.name}" +
                 " for ${game.platform.minecraftVersion.name})")
         // Template strings are cool.
 
@@ -66,7 +66,7 @@ public class HelloFromKotlin {
                 ClientConnectionEvent.Join::class.java,
                 HelloListener())
 
-        game.commandDispatcher.register(this, CommandSpec.builder()
+        game.commandManager.register(this, CommandSpec.builder()
                 .description("Tasty snacks.".reset())
                 // Note the easy lambda use. If the final parameter of a method
                 // is a function type, you can omit parens. This allows for
