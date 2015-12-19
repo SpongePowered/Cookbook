@@ -18,6 +18,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameAboutToStartServerEvent;
+import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.extra.skylands.SkylandsWorldGeneratorModifier;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.text.Text;
@@ -40,6 +41,32 @@ public class WorldsTest {
     @Inject private Game game;
 
     @Listener
+    public void onGamePreInitialization(GamePreInitializationEvent event) {
+        this.game.getCommandManager().register(this, CommandSpec.builder()
+                        .description(Texts.of("Teleports a player to another world"))
+                        .arguments(seq(playerOrSource(Texts.of("target")), onlyOne(world(Texts.of("world")))))
+                        .permission("worldstest.command.tpworld")
+                        .executor((src, args) -> {
+                            final Optional<WorldProperties> optWorldProperties = args.getOne("world");
+                            final Optional<World> optWorld = game.getServer().getWorld(optWorldProperties.get().getWorldName());
+                            if (!optWorld.isPresent()) {
+                                throw new CommandException(Texts.of("World [", Texts.of(TextColors.AQUA, optWorldProperties.get().getWorldName()),
+                                        "] "
+                                        + "was not found."));
+                            }
+                            for (Player target : args.<Player>getAll("target")) {
+                                target.setLocation(new Location<>(optWorld.get(), optWorld.get().getProperties()
+                                        .getSpawnPosition()));
+                            }
+                            return CommandResult.success();
+                        })
+                        .build()
+                , "tpworld");
+
+        this.game.getCommandManager().register(this, new CommandSpawn(this.game), "spawn");
+    }
+
+    @Listener
     public void onServerAboutToStart(GameAboutToStartServerEvent e) {
         final SkylandsWorldGeneratorModifier skylandsModifier = new SkylandsWorldGeneratorModifier();
         this.game.getRegistry().registerWorldGeneratorModifier(skylandsModifier);
@@ -54,7 +81,7 @@ public class WorldsTest {
                 .dimension(DimensionTypes.THE_END)
                 .generator(GeneratorTypes.THE_END)
                 .gameMode(GameModes.CREATIVE);
-        
+
         createAndLoadWorld(builder.build());
 
         builder.reset()
@@ -65,9 +92,9 @@ public class WorldsTest {
                 .dimension(DimensionTypes.NETHER)
                 .generator(GeneratorTypes.NETHER)
                 .gameMode(GameModes.CREATIVE);
-        
+
         createAndLoadWorld(builder.build());
-                
+
         builder.reset()
                 .name("skylands")
                 .enabled(true)
@@ -77,9 +104,9 @@ public class WorldsTest {
                 .generator(GeneratorTypes.OVERWORLD)
                 .generatorModifiers(skylandsModifier)
                 .gameMode(GameModes.CREATIVE);
-        
+
         createAndLoadWorld(builder.build());
-        
+
         builder.reset()
                 .name("skyhell")
                 .enabled(true)
@@ -103,30 +130,8 @@ public class WorldsTest {
                 .gameMode(GameModes.CREATIVE);
 
         createAndLoadWorld(builder.build());
-
-        this.game.getCommandManager().register(this, CommandSpec.builder()
-                .description(Texts.of("Teleports a player to another world"))
-                .arguments(seq(playerOrSource(Texts.of("target")), onlyOne(world(Texts.of("world")))))
-                .permission("worldstest.command.tpworld")
-                .executor((src, args) -> {
-                    final Optional<WorldProperties> optWorldProperties = args.getOne("world");
-                    final Optional<World> optWorld = game.getServer().getWorld(optWorldProperties.get().getWorldName());
-                    if (!optWorld.isPresent()) {
-                        throw new CommandException(Texts.of("World [", Texts.of(TextColors.AQUA, optWorldProperties.get().getWorldName()), "] "
-                                + "was not found."));
-                    }
-                    for (Player target : args.<Player>getAll("target")) {
-                        target.setLocation(new Location<>(optWorld.get(), optWorld.get().getProperties()
-                                .getSpawnPosition()));
-                    }
-                    return CommandResult.success();
-                })
-                .build()
-                , "tpworld");
-
-        this.game.getCommandManager().register(this, new CommandSpawn(this.game), "spawn");
     }
-    
+
     private void createAndLoadWorld(WorldCreationSettings settings) {
         final Optional<WorldProperties> optWorldProperties = this.game.getServer().createWorldProperties(settings);
         if (optWorldProperties.isPresent()) {
