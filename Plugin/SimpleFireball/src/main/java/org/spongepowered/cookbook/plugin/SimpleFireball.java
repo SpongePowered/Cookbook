@@ -25,36 +25,38 @@
 
 package org.spongepowered.cookbook.plugin;
 
-import java.util.Map;
-import java.util.WeakHashMap;
-
+import com.flowpowered.math.vector.Vector3d;
+import com.google.inject.Inject;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
-import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.projectile.Projectile;
 import org.spongepowered.api.entity.projectile.Snowball;
 import org.spongepowered.api.entity.projectile.explosive.fireball.LargeFireball;
-import org.spongepowered.api.event.entity.player.PlayerInteractEvent;
-import org.spongepowered.api.event.state.ServerStartingEvent;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
+import org.spongepowered.api.event.block.InteractBlockEvent;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.filter.cause.First;
+import org.spongepowered.api.event.game.state.GameStartingServerEvent;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.util.event.Order;
-import org.spongepowered.api.util.event.Subscribe;
 import org.spongepowered.api.world.World;
 
-import com.flowpowered.math.vector.Vector3d;
-import com.google.common.base.Optional;
-import com.google.inject.Inject;
+import java.util.Map;
+import java.util.Optional;
+import java.util.WeakHashMap;
 
 @Plugin(id = "com.afterkraft.SimpleFireball",
         name = "SimpleFireball",
-        version = "1.0")
+        version = "1.1")
 public class SimpleFireball {
 
     private final WeakHashMap<Projectile, Vector3d> fireballMap = new
@@ -63,8 +65,8 @@ public class SimpleFireball {
     private PluginContainer container;
 
     private static Vector3d getVelocity(Player player, double multiplier) {
-        double yaw = ((player.getRotation().getX() + 90) % 360);
-        double pitch = ((player.getRotation().getY()) * -1);
+        double yaw = ((player.getRotation().getY() + 90) % 360);
+        double pitch = ((player.getRotation().getX()) * -1);
         double rotYCos = Math.cos(Math.toRadians(pitch));
         double rotYSin = Math.sin(Math.toRadians(pitch));
         double rotXCos = Math.cos(Math.toRadians(yaw));
@@ -73,18 +75,19 @@ public class SimpleFireball {
                 multiplier * rotYSin, (multiplier * rotYCos) * rotXSin);
     }
 
-    @Subscribe
-    public void onStarting(ServerStartingEvent event) {
-        event.getGame().getSyncScheduler().runRepeatingTask(container, new
-                FireballUpdater(), 1);
+    @Listener
+    public void onStarting(GameStartingServerEvent event) {
+        Sponge.getScheduler().createTaskBuilder()
+                .execute(new FireballUpdater())
+                .intervalTicks(1)
+                .submit(this.container);
     }
 
-    private static final Text NO_PERMISSION = Texts.of(TextColors.RED,
+    private static final Text NO_PERMISSION = Text.of(TextColors.RED,
             "Hey! you don't have permission for large fireballs... NOOB!!");
 
-    @Subscribe(order = Order.POST)
-    public void onInteract(PlayerInteractEvent event) {
-        Player player = event.getPlayer();
+    @Listener(order = Order.POST)
+    public void onInteract(InteractBlockEvent event, @First Player player) {
         Optional<ItemStack> option = player.getItemInHand();
 
         if (option.isPresent()) {
@@ -105,18 +108,18 @@ public class SimpleFireball {
         World world = player.getWorld();
         Optional<Entity> optional = world.createEntity(EntityTypes.SNOWBALL,
                 player.getLocation().getPosition().add(Math.cos((player
-                                .getRotation().getX() - 90) % 360) * 0.2,
+                                .getRotation().getY() - 90) % 360) * 0.2,
                         1.8, Math.sin((player
-                                .getRotation().getX() - 90) % 360) * 0.2));
+                                .getRotation().getY() - 90) % 360) * 0.2));
 
         if (optional.isPresent()) {
             Vector3d velocity = getVelocity(player, 1.5D);
-            optional.get().setVelocity(velocity);
+            optional.get().offer(Keys.VELOCITY, velocity);
             Snowball fireball = (Snowball) optional.get();
             fireball.setShooter(player);
-            fireball.setDamage(4);
-            world.spawnEntity(fireball);
-            fireball.setFireTicks(100000);
+            fireball.offer(Keys.ATTACK_DAMAGE, 4D);
+            world.spawnEntity(fireball, Cause.of(player));
+            fireball.offer(Keys.FIRE_TICKS, 100000);
         }
     }
 
@@ -127,13 +130,14 @@ public class SimpleFireball {
 
         if (optional.isPresent()) {
             Vector3d velocity = getVelocity(player, 1.5D);
-            optional.get().setVelocity(velocity);
+            optional.get().offer(Keys.VELOCITY, velocity);
             LargeFireball fireball = (LargeFireball) optional.get();
             fireball.setShooter(player);
-            fireball.setExplosionPower(3);
-            fireball.setDamage(8);
-            world.spawnEntity(fireball);
-            fireballMap.put(fireball, velocity);
+            // TODO This vanished after the Data API was introduced
+            // fireball.setExplosionPower(3);
+            fireball.offer(Keys.ATTACK_DAMAGE, 8D);
+            world.spawnEntity(fireball, Cause.of(player));
+            this.fireballMap.put(fireball, velocity);
         }
     }
 
@@ -141,9 +145,9 @@ public class SimpleFireball {
 
         @Override
         public void run() {
-            for (Map.Entry<Projectile, Vector3d> entry : fireballMap
+            for (Map.Entry<Projectile, Vector3d> entry : SimpleFireball.this.fireballMap
                     .entrySet()) {
-                entry.getKey().setVelocity(entry.getValue());
+                entry.getKey().offer(Keys.VELOCITY, entry.getValue());
             }
 
         }

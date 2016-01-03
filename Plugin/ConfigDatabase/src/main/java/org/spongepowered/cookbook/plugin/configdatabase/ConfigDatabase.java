@@ -25,32 +25,31 @@
 
 package org.spongepowered.cookbook.plugin.configdatabase;
 
+import com.google.inject.Inject;
+import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.commented.CommentedConfigurationNode;
+import ninja.leaping.configurate.loader.ConfigurationLoader;
+import org.slf4j.Logger;
+import org.spongepowered.api.config.DefaultConfig;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.game.state.GameInitializationEvent;
+import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
+import org.spongepowered.api.plugin.Plugin;
+import org.spongepowered.api.plugin.PluginContainer;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 
-import com.google.common.base.Optional;
-import org.slf4j.Logger;
-import org.spongepowered.api.Game;
-import org.spongepowered.api.event.state.PreInitializationEvent;
-import org.spongepowered.api.event.state.InitializationEvent;
-import org.spongepowered.api.plugin.Plugin;
-import org.spongepowered.api.plugin.PluginContainer;
-import org.spongepowered.api.util.event.Subscribe;
-import org.spongepowered.api.service.config.DefaultConfig;
-
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.loader.ConfigurationLoader;
-
-import com.google.inject.Inject;
-
-@Plugin(id = ConfigDatabase.NAME, name = "ConfigDatabase", version = "0,1")
+@Plugin(id = ConfigDatabase.NAME, name = "ConfigDatabase", version = "0.2")
 public class ConfigDatabase {
 
     public static final String NAME = "ConfigDatabase";
-    private Game game;
     private ConfigurationNode config = null;
-    private Optional<PluginContainer> pluginContainer;
+    @Inject
+    private PluginContainer pluginContainer;
+
+
     private static Logger logger;
 
     public ConfigDatabase() {
@@ -66,13 +65,13 @@ public class ConfigDatabase {
 
     @Inject
     @DefaultConfig(sharedRoot = true)
-    private ConfigurationLoader configManager;
+    private ConfigurationLoader<CommentedConfigurationNode> configManager;
 
     public File getDefaultConfig() {
         return this.defaultConfig;
     }
 
-    public ConfigurationLoader getConfigManager() {
+    public ConfigurationLoader<CommentedConfigurationNode> getConfigManager() {
         return this.configManager;
     }
 
@@ -81,16 +80,12 @@ public class ConfigDatabase {
     // the server is in an early state of starting up yet, so don't do more than that.
     // See https://docs.spongepowered.org/en/latest/plugins/plugin-lifecycle/ for more information on
     // what you can do (And what is appropriate to do) in each stage.
-    // 
+    //
 
-    @Subscribe
-    public void onPreInitialization(PreInitializationEvent event) {
-
-        this.game = event.getGame();
-        this.pluginContainer = game.getPluginManager().getPlugin(ConfigDatabase.NAME);
-        logger = game.getPluginManager().getLogger(pluginContainer.get());
-
-        ConfigDatabase.getLogger().info(String.format("[%s]: Starting up da SpongePlots.", ConfigDatabase.NAME));
+    @Listener
+    public void onPreInitialization(GamePreInitializationEvent event) {
+        logger = this.pluginContainer.getLogger();
+        ConfigDatabase.getLogger().info("Starting up da SpongePlots.");
 
         try {
 
@@ -103,7 +98,7 @@ public class ConfigDatabase {
             // Here, you can put global configuration variables, such as a version number (for detecting
             // whether you need to integrate new changes to your config file structure into an existing
             // config file)
-            // 
+            //
 
             this.config.getNode("ConfigVersion").setValue(1);
 
@@ -116,17 +111,17 @@ public class ConfigDatabase {
             this.config.getNode("DB", "Port").setValue(3306);
             this.config.getNode("DB", "Username").setValue("SpongePlots");
             this.config.getNode("DB", "Password").setValue("YouReallyShouldChangeMe");
-            this.config.getNode("DB", "Configured").setValue(0);
-            getConfigManager().save(config);
-            getLogger().info("[ConfigDatabase]: Created default configuration, ConfigDatabase will not run until you have edited this file!");
+            this.config.getNode("DB", "Configured").setValue(false);
+            getConfigManager().save(this.config);
+            getLogger().info("Created default configuration, ConfigDatabase will not run until you have edited this file!");
 
             }
 
             this.config = getConfigManager().load();
-            
+
         } catch (IOException exception) {
 
-            getLogger().error("[ConfigDatabase]: Couldn't create default configuration file!");
+            getLogger().error("Couldn't create default configuration file!");
 
         }
 
@@ -136,25 +131,31 @@ public class ConfigDatabase {
         // immediately upgraded to version 2. The next time you run the module, version 3 upgrades would be appplied.
         // After that, you should be getting 'Configuration file is current' messages on load.
 
-        int version = config.getNode("version").getInt();
-        getLogger().info("[ConfigDatabase]: Configfile version is " + version + ".");
+        int version = this.config.getNode("ConfigVersion").getInt();
+        getLogger().info("Configfile version is " + version + ".");
 
         switch (version) {
 
             case 1: {
-                getLogger().info("[ConfigDatabase]: Adding config file version 2 fields");
+                getLogger().info("Adding config file version 2 fields");
                 this.config.getNode("version2", "foo").setValue("bar");
             }
-            break;
 
             case 2: {
-                getLogger().info("[ConfigDatabase]: Upgrading config file to version 3.");
+                getLogger().info("Upgrading config file to version 3.");
                 this.config.getNode("version3", "baz").setValue("bar");
             }
-            break;
 
             default: {
-                getLogger().info("[ConfigDatabase]: Configuration file is current.");
+                this.config.getNode("ConfigVersion").setValue(3);
+                getLogger().info("Configuration file is current.");
+
+                try {
+                    // Save any changes
+                    getConfigManager().save(this.config);
+                } catch (IOException e) {
+                    getLogger().error("Failed to save config file!", e);
+                }
             }
         }
     }
@@ -163,29 +164,29 @@ public class ConfigDatabase {
     // plugin, such as connecting to our database backend, load any further assets we want, or initialize commands.
     // Again, see the plugin lifetime documentation on which events you should be subscribing to.
 
-    @Subscribe
-    public void onInitialization(InitializationEvent event) {
+    @Listener
+    public void onInitialization(GameInitializationEvent event) {
         Connection db;
-        
+
         // This is a sanity check you should always do. Don't try to connect to an unconfigured database.
 
-        if (config.getNode("DB", "configured").getBoolean() != true) {
-            getLogger().info("[ConfigDatabase] You haven't configured the database. Exiting.");
+        if (this.config.getNode("DB", "Configured").getBoolean() != true) {
+            getLogger().info("You haven't configured the database. Exiting.");
 
             // TODO We should probably do more 'formal' shutdown on the mod here.
             return;
         }
 
-        getLogger().info("[ConfigDatabase]: In InitializationEvent.");
+        getLogger().info("In InitializationEvent.");
 
         // This is an example of calling another method with only parts of the config, rather than passing
         // the entire config, of which maybe 3-4 parameters will be used. In this case, only the attributes
         // in the "DB" section of the config is passed to DB.getConnection.
         // Note that here, we do not actually assign a connection to the variable db, in case you are just
         // testing this. If you have a mySQL database handy, add "db =" in front of DB.getConnection.
-        
-//        db.getConnection(config.getNode("DB"));
-        getLogger().info("[ConfigDatabase]: I should now have a database connection.");
+
+        DatabaseUtils.getConnection(this.config.getNode("DB"));
+        getLogger().info("I should now have a database connection.");
 
     }
 }

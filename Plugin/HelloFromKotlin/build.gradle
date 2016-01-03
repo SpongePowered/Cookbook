@@ -16,9 +16,10 @@ apply plugin: 'kotlin'
 // Kotlin's stdlib and such need to be shadowed in.
 apply plugin: 'com.github.johnrengelman.shadow'
 
+version = '1.0.1'
+
 repositories {
     jcenter()
-
     maven {
         name 'Sponge maven repo'
         url 'http://repo.spongepowered.org/maven'
@@ -29,7 +30,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
     compile "org.jetbrains.kotlin:kotlin-runtime:$kotlinVersion"
-    compile 'org.spongepowered:spongeapi:2.1-SNAPSHOT'
+    compile 'org.spongepowered:spongeapi:3.0.0'
 }
 
 sourceSets {

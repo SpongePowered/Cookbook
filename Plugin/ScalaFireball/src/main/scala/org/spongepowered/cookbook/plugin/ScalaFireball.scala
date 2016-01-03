@@ -26,29 +26,33 @@
 package org.spongepowered.cookbook.plugin
 
 import com.flowpowered.math.vector.Vector3d
-import com.google.common.base.Optional
 import com.google.inject.Inject
-import org.spongepowered.api.entity.player.Player
+import java.util.Optional
+import org.spongepowered.api.Sponge
+import org.spongepowered.api.data.key.Keys
+import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.entity.projectile.explosive.fireball.LargeFireball
 import org.spongepowered.api.entity.projectile.{Projectile, Snowball}
 import org.spongepowered.api.entity.{Entity, EntityTypes}
-import org.spongepowered.api.event.entity.player.PlayerInteractEvent
-import org.spongepowered.api.event.state.ServerStartingEvent
+import org.spongepowered.api.event.{Order, Listener}
+import org.spongepowered.api.event.block.InteractBlockEvent
+import org.spongepowered.api.event.cause.Cause
+import org.spongepowered.api.event.game.state.GameStartingServerEvent
+import org.spongepowered.api.event.filter.cause.First
 import org.spongepowered.api.item.ItemTypes
 import org.spongepowered.api.item.inventory.ItemStack
 import org.spongepowered.api.plugin.{Plugin, PluginContainer}
-import org.spongepowered.api.text.Texts
 import org.spongepowered.api.text.format.TextColors
-import org.spongepowered.api.util.event.{Order, Subscribe}
+import org.spongepowered.api.text.Text
 import org.spongepowered.api.world.World
 
 object ScalaFireball {
-  val NoPermission = Texts.of(TextColors.RED,
+  val NoPermission = Text.of(TextColors.RED,
     "Hey! you don't have permission for large fireballs... NOOB!!")
 
   private def getVelocity(player: Player, multiplier: Double): Vector3d = {
-    val yaw: Double = (player.getRotation.getX + 90) % 360
-    val pitch: Double = player.getRotation.getY * -1
+    val yaw: Double = (player.getRotation.getY + 90) % 360
+    val pitch: Double = player.getRotation.getX * -1
     val rotYCos: Double = Math.cos(Math.toRadians(pitch))
     val rotYSin: Double = Math.sin(Math.toRadians(pitch))
     val rotXCos: Double = Math.cos(Math.toRadians(yaw))
@@ -57,22 +61,23 @@ object ScalaFireball {
   }
 }
 
-@Plugin(id = "ScalaFireballs", name = "ScalaFireballs", version = "1.0")
+@Plugin(id = "ScalaFireballs", name = "ScalaFireballs", version = "1.1")
 class ScalaFireball {
   private final val fireballMap: java.util.WeakHashMap[Projectile, Vector3d] =
     new java.util.WeakHashMap[Projectile, Vector3d]
   @Inject
   private val container: PluginContainer = null
 
-  @Subscribe
-  def onStarting(event: ServerStartingEvent) {
-    event.getGame.getSyncScheduler.runRepeatingTask(container, new
-        FireballUpdater, 1)
+  @Listener
+  def onStarting(event: GameStartingServerEvent) {
+    Sponge.getScheduler.createTaskBuilder
+      .execute(new FireballUpdater)
+      .intervalTicks(1)
+      .submit(this.container)
   }
 
-  @Subscribe(order = Order.POST)
-  def onInteract(event: PlayerInteractEvent) {
-    val player: Player = event.getPlayer
+  @Listener(order = Order.POST)
+  def onInteract(event: InteractBlockEvent, @First player: Player) {
     val option: Optional[ItemStack] = player.getItemInHand
     if (option.isPresent) {
       option.get.getItem match {
@@ -92,18 +97,18 @@ class ScalaFireball {
     val world: World = player.getWorld
     val optional: Optional[Entity] = world.createEntity(EntityTypes.SNOWBALL,
       player.getLocation.getPosition
-        .add(Math.cos((player.getRotation.getX - 90)
+        .add(Math.cos((player.getRotation.getY - 90)
         % 360) * 0.2,
           1.8,
-          Math.sin((player.getRotation.getX - 90) % 360) * 0.2))
+          Math.sin((player.getRotation.getY - 90) % 360) * 0.2))
     if (optional.isPresent) {
       val velocity: Vector3d = ScalaFireball.getVelocity(player, 1.5D)
-      optional.get.setVelocity(velocity)
+      optional.get.offer(Keys.VELOCITY, velocity)
       val fireball: Snowball = optional.get.asInstanceOf[Snowball]
       fireball.setShooter(player)
-      fireball.setDamage(4)
-      world.spawnEntity(fireball)
-      fireball.setFireTicks(100000)
+      fireball.offer[java.lang.Double](Keys.ATTACK_DAMAGE, 4)
+      world.spawnEntity(fireball, Cause.of(player))
+      fireball.offer[java.lang.Integer](Keys.FIRE_TICKS, 100000)
     }
   }
 
@@ -113,12 +118,13 @@ class ScalaFireball {
       player.getLocation.getPosition.add(0, 1.8, 0))
     if (optional.isPresent) {
       val velocity: Vector3d = ScalaFireball.getVelocity(player, 1.5D)
-      optional.get.setVelocity(velocity)
+      optional.get.offer(Keys.VELOCITY, velocity)
       val fireball: LargeFireball = optional.get.asInstanceOf[LargeFireball]
       fireball.setShooter(player)
-      fireball.setExplosionPower(3)
-      fireball.setDamage(8)
-      world.spawnEntity(fireball)
+      // TODO This vanished after Data API was introduced
+      // fireball.setExplosionPower(3)
+      fireball.offer[java.lang.Double](Keys.ATTACK_DAMAGE, 8)
+      world.spawnEntity(fireball, Cause.of(player))
       fireballMap.put(fireball, velocity)
     }
   }
@@ -127,7 +133,7 @@ class ScalaFireball {
     def run() {
       import scala.collection.JavaConversions._
       for (entry <- fireballMap.entrySet) {
-        entry.getKey.setVelocity(entry.getValue)
+        entry.getKey.offer(Keys.VELOCITY, entry.getValue)
       }
     }
   }

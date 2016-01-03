@@ -1,6 +1,5 @@
 package org.spongepowered.cookbook.plugin;
 
-
 public class RunnableTaskBody implements Runnable {
     String label;
     long period;
@@ -15,34 +14,35 @@ public class RunnableTaskBody implements Runnable {
     }
 
     RunnableTaskBody(String s, long period, TimeBase base) {
-        label = s;
+        this.label = s;
         this.period = period;
-        basis = base;
+        this.basis = base;
     }
 
     RunnableTaskBody setVerbose(boolean verboseOn) {
-        verbosity = verboseOn;
+        this.verbosity = verboseOn;
         return this;
     }
 
+    @Override
     public void run() {
         long mils = System.currentTimeMillis();
         long nanos = System.nanoTime();
         String expected = null;
 
-        if (basis == TimeBase.TICK) {
-            expected = "" + (50 * period);
+        if (this.basis == TimeBase.TICK) {
+            expected = "" + (50 * this.period);
         }
-        else if (basis == TimeBase.WALLCLOCK) {
-            expected = "" + period;
+        else if (this.basis == TimeBase.WALLCLOCK) {
+            expected = "" + this.period;
         }
 
-        if ( verbosity ) {
-            System.out.println(label + "\t" + nanos + "\t" + mils +
-                    "\t" + (mils - counter) + " (Expected: " + expected + ") \t" + (nanos - lastnano));
+        if ( this.verbosity ) {
+            System.out.println(this.label + "\t" + nanos + "\t" + mils +
+                    "\t" + (mils - this.counter) + " (Expected: " + expected + ") \t" + (nanos - this.lastnano));
         }
-        counter = mils;
-        lastnano = nanos;
+        this.counter = mils;
+        this.lastnano = nanos;
     }
 }
 

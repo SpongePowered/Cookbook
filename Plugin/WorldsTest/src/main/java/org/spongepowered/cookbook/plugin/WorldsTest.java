@@ -6,9 +6,7 @@ import static org.spongepowered.api.command.args.GenericArguments.seq;
 import static org.spongepowered.api.command.args.GenericArguments.world;
 
 import com.flowpowered.math.vector.Vector3i;
-import com.google.inject.Inject;
-import org.slf4j.Logger;
-import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandCallable;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -22,35 +20,33 @@ import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.extra.skylands.SkylandsWorldGeneratorModifier;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.DimensionTypes;
 import org.spongepowered.api.world.GeneratorTypes;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.WorldCreationSettings;
+import org.spongepowered.api.world.gen.WorldGeneratorModifier;
 import org.spongepowered.api.world.storage.WorldProperties;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Plugin(id = "worldstest", name = "WorldsTest", version = "0.1")
+@Plugin(id = "worldstest", name = "WorldsTest", version = "0.2")
 public class WorldsTest {
-
-    @Inject private Logger logger;
-    @Inject private Game game;
 
     @Listener
     public void onGamePreInitialization(GamePreInitializationEvent event) {
-        this.game.getCommandManager().register(this, CommandSpec.builder()
-                        .description(Texts.of("Teleports a player to another world"))
-                        .arguments(seq(playerOrSource(Texts.of("target")), onlyOne(world(Texts.of("world")))))
+        Sponge.getCommandManager().register(this, CommandSpec.builder()
+                        .description(Text.of("Teleports a player to another world"))
+                        .arguments(seq(playerOrSource(Text.of("target")), onlyOne(world(Text.of("world")))))
                         .permission("worldstest.command.tpworld")
                         .executor((src, args) -> {
                             final Optional<WorldProperties> optWorldProperties = args.getOne("world");
-                            final Optional<World> optWorld = game.getServer().getWorld(optWorldProperties.get().getWorldName());
+                            final Optional<World> optWorld = Sponge.getServer().getWorld(optWorldProperties.get().getWorldName());
                             if (!optWorld.isPresent()) {
-                                throw new CommandException(Texts.of("World [", Texts.of(TextColors.AQUA, optWorldProperties.get().getWorldName()),
+                                throw new CommandException(Text.of("World [", Text.of(TextColors.AQUA, optWorldProperties.get().getWorldName()),
                                         "] "
                                         + "was not found."));
                             }
@@ -63,13 +59,13 @@ public class WorldsTest {
                         .build()
                 , "tpworld");
 
-        this.game.getCommandManager().register(this, new CommandSpawn(this.game), "spawn");
+        Sponge.getCommandManager().register(this, new CommandSpawn(), "spawn");
     }
 
     @Listener
     public void onServerAboutToStart(GameAboutToStartServerEvent e) {
         final SkylandsWorldGeneratorModifier skylandsModifier = new SkylandsWorldGeneratorModifier();
-        this.game.getRegistry().registerWorldGeneratorModifier(skylandsModifier);
+        Sponge.getRegistry().register(WorldGeneratorModifier.class, skylandsModifier);
 
         final WorldCreationSettings.Builder builder = WorldCreationSettings.builder();
 
@@ -133,19 +129,13 @@ public class WorldsTest {
     }
 
     private void createAndLoadWorld(WorldCreationSettings settings) {
-        final Optional<WorldProperties> optWorldProperties = this.game.getServer().createWorldProperties(settings);
+        final Optional<WorldProperties> optWorldProperties = Sponge.getServer().createWorldProperties(settings);
         if (optWorldProperties.isPresent()) {
-            this.game.getServer().loadWorld(optWorldProperties.get());
+            Sponge.getServer().loadWorld(optWorldProperties.get());
         }
     }
 
     private static class CommandSpawn implements CommandCallable {
-
-        private final Game game;
-
-        public CommandSpawn(Game game) {
-            this.game = game;
-        }
 
         @Override
         public boolean testPermission(CommandSource source) {
@@ -154,17 +144,17 @@ public class WorldsTest {
 
         @Override
         public Optional<Text> getShortDescription(CommandSource source) {
-            return Optional.of((Text) Texts.of("Used to get spawn information or set the point of a world"));
+            return Optional.of((Text) Text.of("Used to get spawn information or set the point of a world"));
         }
 
         @Override
         public Optional<Text> getHelp(CommandSource source) {
-            return Optional.of((Text) Texts.of("usage: spawn -i <world_name> | -s <world_name> <x> <y> <z>"));
+            return Optional.of((Text) Text.of("usage: spawn -i <world_name> | -s <world_name> <x> <y> <z>"));
         }
 
         @Override
         public Text getUsage(CommandSource source) {
-            return Texts.of("usage: spawn -i <world_name> | -s <world_name> <x> <y> <z>");
+            return Text.of("usage: spawn -i <world_name> | -s <world_name> <x> <y> <z>");
         }
 
         @Override
@@ -182,7 +172,7 @@ public class WorldsTest {
                 if (arguments.isEmpty()) {
                     world = player.getWorld();
                     spawnCoordinates = player.getWorld().getProperties().getSpawnPosition();
-                    player.setLocation(new Location(world, spawnCoordinates.toDouble()));
+                    player.setLocation(new Location<>(world, spawnCoordinates.toDouble()));
                 } else {
                     if ("-i".equals(args[0])) {
                         // (Player) /spawn -i
@@ -190,18 +180,18 @@ public class WorldsTest {
                             world = player.getWorld();
                             // (Player) /spawn -i <world_name>
                         } else {
-                            final Optional<World> optWorldCandidate = this.game.getServer().getWorld(args[1]);
+                            final Optional<World> optWorldCandidate = Sponge.getServer().getWorld(args[1]);
                             if (optWorldCandidate.isPresent()) {
                                 world = optWorldCandidate.get();
                             } else {
-                                source.sendMessage(Texts.of("World [", TextColors.AQUA, args[1], TextColors.WHITE, "] was not found"));
+                                source.sendMessage(Text.of("World [", TextColors.AQUA, args[1], TextColors.WHITE, "] was not found"));
                                 return CommandResult.success();
                             }
                         }
 
                         spawnCoordinates = world.getProperties().getSpawnPosition();
 
-                        source.sendMessage(Texts.of("World [", TextColors.AQUA, world.getName(), TextColors.WHITE,
+                        source.sendMessage(Text.of("World [", TextColors.AQUA, world.getName(), TextColors.WHITE,
                                 "]: spawn -> x [", TextColors.GREEN, spawnCoordinates.getX(), TextColors.WHITE, "] | y [", TextColors.GREEN,
                                 spawnCoordinates.getY(), TextColors.WHITE, "] | z [", TextColors.GREEN, spawnCoordinates.getZ(), TextColors
                                         .WHITE, "]."));
@@ -216,14 +206,14 @@ public class WorldsTest {
                             try {
                                 spawnCoordinates = new Vector3i(Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
                             } catch (Exception ex) {
-                                source.sendMessage(Texts.of("Invalid spawn coordinates, must be in numeric format. Ex. /spawn -s 0 0 0."));
+                                source.sendMessage(Text.of("Invalid spawn coordinates, must be in numeric format. Ex. /spawn -s 0 0 0."));
                                 return CommandResult.success();
                             }
                         }
 
                         world.getProperties().setSpawnPosition(spawnCoordinates);
 
-                        source.sendMessage(Texts.of("World [", TextColors.AQUA, world.getName(), TextColors.WHITE,
+                        source.sendMessage(Text.of("World [", TextColors.AQUA, world.getName(), TextColors.WHITE,
                                 "]: spawn set to -> x [", TextColors.GREEN, spawnCoordinates.getX(), TextColors.WHITE, "] | y [", TextColors
                                         .GREEN,
                                 spawnCoordinates.getY(), TextColors.WHITE, "] | z [", TextColors.GREEN, spawnCoordinates.getZ(), TextColors
@@ -236,7 +226,7 @@ public class WorldsTest {
 
         @Override
         public List<String> getSuggestions(CommandSource source, String arguments) throws CommandException {
-            return null;
+            return new ArrayList<>();
         }
     }
 }

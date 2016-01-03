@@ -1,16 +1,12 @@
 apply plugin: 'java'
 
-sourceCompatibility = 1.5
-version = '1.0'
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
 
-defaultTasks 'build'
+version = '1.1'
 
 repositories {
     mavenCentral()
-    maven {
-        name 'Sonatype'
-        url 'https://oss.sonatype.org/content/repositories/snapshots/'
-    }
     maven {
         name 'Sponge maven repo'
         url 'http://repo.spongepowered.org/maven'
@@ -18,5 +14,5 @@ repositories {
 }
 
 dependencies {
-    compile "org.spongepowered:spongeapi:1.1-SNAPSHOT"
+    compile "org.spongepowered:spongeapi:3.0.0"
 }

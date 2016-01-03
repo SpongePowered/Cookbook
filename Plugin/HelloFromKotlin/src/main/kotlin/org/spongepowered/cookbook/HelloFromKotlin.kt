@@ -12,11 +12,11 @@ import org.spongepowered.api.event.game.state.GameAboutToStartServerEvent
 import org.spongepowered.api.event.network.ClientConnectionEvent
 import org.spongepowered.api.plugin.Plugin
 import org.spongepowered.api.text.action.TextActions
-import org.spongepowered.api.text.title.Titles
+import org.spongepowered.api.text.title.Title
 import java.net.URL
 
 // Plugins are declared in basically the same way as Java.
-@Plugin(id = "HelloFromKotlin", name = "Hello From Kotlin!", version = "1.0.0")
+@Plugin(id = "HelloFromKotlin", name = "Hello From Kotlin!", version = "1.0.1")
 public class HelloFromKotlin {
 
     // In Kotlin, types are non-nullable by default. Normally, you would have
@@ -77,7 +77,7 @@ public class HelloFromKotlin {
                     if (source is Player) {
                         // Notice the lack of a cast -- Kotlin is really smart.
                         source.sendTitle(
-                                Titles.builder()
+                                Title.builder()
                                         .subtitle("Kotlin".gold()
                                                 + " says hi, ${source.name}")
                                         .stay(80).build())
