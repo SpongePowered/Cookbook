@@ -16,7 +16,7 @@ import java.util.Random;
 
 public class BiomeBufferTest {
 
-    public static final Random RANDOM = new Random();
+    private static final Random RANDOM = new Random();
     private static final BiomeType[] TEST_BIOMES = {
         BiomeTypes.OCEAN,
         BiomeTypes.BEACH,
@@ -172,7 +172,7 @@ public class BiomeBufferTest {
         }
     }
 
-    private static BiomeType getRandomBiome() {
+    public static BiomeType getRandomBiome() {
         return TEST_BIOMES[RANDOM.nextInt(TEST_BIOMES.length)];
     }
 

@@ -6,7 +6,7 @@ apply plugin: 'com.github.johnrengelman.shadow'
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
-version = '0.2'
+version = '0.3-SNAPSHOT'
 
 buildscript {
     repositories {
@@ -19,6 +19,7 @@ buildscript {
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
     maven {
         name 'Sponge maven repo'
@@ -27,7 +28,7 @@ repositories {
 }
 
 dependencies {
-    compile 'org.spongepowered:spongeapi:3.0.0'
+    compile 'org.spongepowered:spongeapi:3.1.0-SNAPSHOT'
     compile 'junit:junit:4.12'
 }
 

@@ -17,7 +17,7 @@ import java.util.Random;
 
 public class BlockBufferTest {
 
-    public static final Random RANDOM = new Random();
+    private static final Random RANDOM = new Random();
     private static final BlockState[] TEST_BLOCKS = {
         BlockTypes.STONE.getDefaultState(),
         BlockTypes.DIRT.getDefaultState(),
@@ -189,7 +189,7 @@ public class BlockBufferTest {
         }
     }
 
-    private static BlockState getRandomBlock() {
+    public static BlockState getRandomBlock() {
         return TEST_BLOCKS[RANDOM.nextInt(TEST_BLOCKS.length)];
     }
 

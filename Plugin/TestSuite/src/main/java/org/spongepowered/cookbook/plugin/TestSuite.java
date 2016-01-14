@@ -22,7 +22,7 @@ import org.spongepowered.api.world.extent.ExtentBufferFactory;
 import java.util.List;
 import java.util.Optional;
 
-@Plugin(id = "TestSuite", name = "TestSuite", version = "0.2")
+@Plugin(id = "TestSuite", name = "TestSuite", version = "0.3")
 public class TestSuite {
 
     public static ExtentBufferFactory EXTENT_BUFFER_FACTORY;
@@ -53,7 +53,7 @@ public class TestSuite {
     }
 
     private static Result runTests() {
-        return JUnitCore.runClasses(BiomeBufferTest.class, BlockBufferTest.class);
+        return JUnitCore.runClasses(BiomeBufferTest.class, BlockBufferTest.class, BiomeWorkerTest.class, BlockWorkerTest.class);
     }
 
     private class Commands implements CommandCallable {
