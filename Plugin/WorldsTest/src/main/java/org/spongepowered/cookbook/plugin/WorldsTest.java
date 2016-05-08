@@ -6,6 +6,7 @@ import static org.spongepowered.api.command.args.GenericArguments.seq;
 import static org.spongepowered.api.command.args.GenericArguments.world;
 
 import com.flowpowered.math.vector.Vector3i;
+import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandCallable;
 import org.spongepowered.api.command.CommandException;
@@ -13,35 +14,50 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameAboutToStartServerEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
-import org.spongepowered.api.extra.skylands.SkylandsWorldGeneratorModifier;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.world.DimensionTypes;
-import org.spongepowered.api.world.GeneratorTypes;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.WorldCreationSettings;
-import org.spongepowered.api.world.gen.WorldGeneratorModifier;
+import org.spongepowered.api.world.WorldCreationSettingsTypes;
+import org.spongepowered.api.world.gen.WorldGeneratorModifiers;
 import org.spongepowered.api.world.storage.WorldProperties;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Plugin(id = "worldstest", name = "WorldsTest", version = "0.2")
+import javax.inject.Inject;
+
+@Plugin(id = WorldsTest.PLUGIN_ID)
 public class WorldsTest {
+    public static final String PLUGIN_ID = "worldstest";
+    private static final WorldCreationSettings THE_SKYLANDS, THE_SKYHELL, THE_SKYEND;
+
+    static {
+        THE_SKYLANDS = WorldCreationSettings.builder().from(WorldCreationSettingsTypes.OVERWORLD).generatorModifiers(WorldGeneratorModifiers.SKYLANDS)
+                .build("the_skylands", "The Skylands");
+
+        THE_SKYHELL = WorldCreationSettings.builder().from(WorldCreationSettingsTypes.THE_NETHER).generatorModifiers(WorldGeneratorModifiers.SKYLANDS)
+                .build("the_skyhell", "The SkyHell");
+
+        THE_SKYEND = WorldCreationSettings.builder().from(WorldCreationSettingsTypes.THE_END).generatorModifiers(WorldGeneratorModifiers.SKYLANDS)
+                .build("the_skyend", "The SkyEnd");
+    }
+
+    @Inject private Logger logger;
 
     @Listener
     public void onGamePreInitialization(GamePreInitializationEvent event) {
         Sponge.getCommandManager().register(this, CommandSpec.builder()
                         .description(Text.of("Teleports a player to another world"))
                         .arguments(seq(playerOrSource(Text.of("target")), onlyOne(world(Text.of("world")))))
-                        .permission("worldstest.command.tpworld")
+                        .permission(PLUGIN_ID + ".command.tpworld")
                         .executor((src, args) -> {
                             final Optional<WorldProperties> optWorldProperties = args.getOne("world");
                             final Optional<World> optWorld = Sponge.getServer().getWorld(optWorldProperties.get().getWorldName());
@@ -64,74 +80,19 @@ public class WorldsTest {
 
     @Listener
     public void onServerAboutToStart(GameAboutToStartServerEvent e) {
-        final SkylandsWorldGeneratorModifier skylandsModifier = new SkylandsWorldGeneratorModifier();
-        Sponge.getRegistry().register(WorldGeneratorModifier.class, skylandsModifier);
-
-        final WorldCreationSettings.Builder builder = WorldCreationSettings.builder();
-
-        builder
-                .name("end")
-                .enabled(true)
-                .loadsOnStartup(true)
-                .keepsSpawnLoaded(true)
-                .dimension(DimensionTypes.THE_END)
-                .generator(GeneratorTypes.THE_END)
-                .gameMode(GameModes.CREATIVE);
-
-        createAndLoadWorld(builder.build());
-
-        builder.reset()
-                .name("nether")
-                .enabled(true)
-                .loadsOnStartup(true)
-                .keepsSpawnLoaded(true)
-                .dimension(DimensionTypes.NETHER)
-                .generator(GeneratorTypes.NETHER)
-                .gameMode(GameModes.CREATIVE);
-
-        createAndLoadWorld(builder.build());
-
-        builder.reset()
-                .name("skylands")
-                .enabled(true)
-                .loadsOnStartup(true)
-                .keepsSpawnLoaded(true)
-                .dimension(DimensionTypes.OVERWORLD)
-                .generator(GeneratorTypes.OVERWORLD)
-                .generatorModifiers(skylandsModifier)
-                .gameMode(GameModes.CREATIVE);
-
-        createAndLoadWorld(builder.build());
-
-        builder.reset()
-                .name("skyhell")
-                .enabled(true)
-                .loadsOnStartup(true)
-                .keepsSpawnLoaded(true)
-                .dimension(DimensionTypes.NETHER)
-                .generator(GeneratorTypes.NETHER)
-                .generatorModifiers(skylandsModifier)
-                .gameMode(GameModes.CREATIVE);
-
-        createAndLoadWorld(builder.build());
-
-        builder.reset()
-                .name("skyend")
-                .enabled(true)
-                .loadsOnStartup(true)
-                .keepsSpawnLoaded(true)
-                .dimension(DimensionTypes.THE_END)
-                .generator(GeneratorTypes.THE_END)
-                .generatorModifiers(skylandsModifier)
-                .gameMode(GameModes.CREATIVE);
-
-        createAndLoadWorld(builder.build());
+        createAndLoadWorld("end", WorldCreationSettingsTypes.THE_END);
+        createAndLoadWorld("nether", WorldCreationSettingsTypes.THE_NETHER);
+        createAndLoadWorld("skylands", THE_SKYLANDS);
+        createAndLoadWorld("skyend", THE_SKYEND);
+        createAndLoadWorld("skyhell", THE_SKYHELL);
     }
 
-    private void createAndLoadWorld(WorldCreationSettings settings) {
-        final Optional<WorldProperties> optWorldProperties = Sponge.getServer().createWorldProperties(settings);
-        if (optWorldProperties.isPresent()) {
-            Sponge.getServer().loadWorld(optWorldProperties.get());
+    private void createAndLoadWorld(String folderName, WorldCreationSettings settings) {
+        try {
+            final WorldProperties properties = Sponge.getServer().createWorldProperties(folderName, settings);
+            Sponge.getServer().loadWorld(properties);
+        } catch (IOException ex) {
+            this.logger.error("Failed to create world data for [" + folderName + "]!", ex);
         }
     }
 
@@ -139,7 +100,7 @@ public class WorldsTest {
 
         @Override
         public boolean testPermission(CommandSource source) {
-            return source.hasPermission("command.sponge.spawn");
+            return source.hasPermission(PLUGIN_ID + ".command.spawn");
         }
 
         @Override
@@ -184,7 +145,7 @@ public class WorldsTest {
                             if (optWorldCandidate.isPresent()) {
                                 world = optWorldCandidate.get();
                             } else {
-                                source.sendMessage(Text.of("World [", TextColors.AQUA, args[1], TextColors.WHITE, "] was not found"));
+                                source.sendMessage(Text.of("World [", TextColors.AQUA, args[1], TextColors.WHITE, "] was not found."));
                                 return CommandResult.success();
                             }
                         }
@@ -206,7 +167,7 @@ public class WorldsTest {
                             try {
                                 spawnCoordinates = new Vector3i(Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
                             } catch (Exception ex) {
-                                source.sendMessage(Text.of("Invalid spawn coordinates, must be in numeric format. Ex. /spawn -s 0 0 0."));
+                                source.sendMessage(Text.of("Invalid spawn coordinates, must be in numeric format. Ex. /spawn -s 0 64 0."));
                                 return CommandResult.success();
                             }
                         }
