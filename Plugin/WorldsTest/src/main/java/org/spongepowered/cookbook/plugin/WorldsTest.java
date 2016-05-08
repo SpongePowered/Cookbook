@@ -37,12 +37,9 @@ import javax.inject.Inject;
 @Plugin(id = WorldsTest.PLUGIN_ID)
 public class WorldsTest {
     public static final String PLUGIN_ID = "worldstest";
-    private static final WorldCreationSettings THE_SKYLANDS, THE_SKYHELL, THE_SKYEND;
+    private static final WorldCreationSettings THE_SKYHELL, THE_SKYEND;
 
     static {
-        THE_SKYLANDS = WorldCreationSettings.builder().from(WorldCreationSettingsTypes.OVERWORLD).generatorModifiers(WorldGeneratorModifiers.SKYLANDS)
-                .build("the_skylands", "The Skylands");
-
         THE_SKYHELL = WorldCreationSettings.builder().from(WorldCreationSettingsTypes.THE_NETHER).generatorModifiers(WorldGeneratorModifiers.SKYLANDS)
                 .build("the_skyhell", "The SkyHell");
 
@@ -82,7 +79,7 @@ public class WorldsTest {
     public void onServerAboutToStart(GameAboutToStartServerEvent e) {
         createAndLoadWorld("end", WorldCreationSettingsTypes.THE_END);
         createAndLoadWorld("nether", WorldCreationSettingsTypes.THE_NETHER);
-        createAndLoadWorld("skylands", THE_SKYLANDS);
+        createAndLoadWorld("skylands", WorldCreationSettingsTypes.THE_SKYLANDS);
         createAndLoadWorld("skyend", THE_SKYEND);
         createAndLoadWorld("skyhell", THE_SKYHELL);
     }
