@@ -15,8 +15,8 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.game.state.GameAboutToStartServerEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
+import org.spongepowered.api.event.game.state.GameStartingServerEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
@@ -76,7 +76,7 @@ public class WorldsTest {
     }
 
     @Listener
-    public void onServerAboutToStart(GameAboutToStartServerEvent e) {
+    public void onGameStartingServerEvent(GameStartingServerEvent event) {
         createAndLoadWorld("end", WorldCreationSettingsTypes.THE_END);
         createAndLoadWorld("nether", WorldCreationSettingsTypes.THE_NETHER);
         createAndLoadWorld("skylands", WorldCreationSettingsTypes.THE_SKYLANDS);
