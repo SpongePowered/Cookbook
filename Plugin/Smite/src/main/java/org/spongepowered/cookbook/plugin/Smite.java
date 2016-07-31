@@ -28,6 +28,7 @@ package org.spongepowered.cookbook.plugin;
 import com.flowpowered.math.vector.Vector3d;
 import com.google.inject.Inject;
 import org.spongepowered.api.block.BlockTypes;
+import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.player.Player;
@@ -62,7 +63,7 @@ public class Smite {
     @Listener(order = Order.POST)
     public void onInteract(InteractBlockEvent.Primary event, @First Player player) {
         // Check if the player is hitting with an ender eye and has the permissions
-        final Optional<ItemStack> optionalStack = player.getItemInHand();
+        final Optional<ItemStack> optionalStack = player.getItemInHand(HandTypes.MAIN_HAND);
         if (!optionalStack.isPresent() || optionalStack.get().getItem().getType() != ItemTypes.ENDER_EYE ||
                 !player.hasPermission("smite.use")) {
             return;
