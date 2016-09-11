@@ -22,8 +22,8 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
-import org.spongepowered.api.world.WorldCreationSettings;
-import org.spongepowered.api.world.WorldCreationSettingsTypes;
+import org.spongepowered.api.world.WorldArchetype;
+import org.spongepowered.api.world.WorldArchetypes;
 import org.spongepowered.api.world.gen.WorldGeneratorModifiers;
 import org.spongepowered.api.world.storage.WorldProperties;
 
@@ -37,13 +37,13 @@ import javax.inject.Inject;
 @Plugin(id = WorldsTest.PLUGIN_ID)
 public class WorldsTest {
     public static final String PLUGIN_ID = "worldstest";
-    private static final WorldCreationSettings THE_SKYHELL, THE_SKYEND;
+    private static final WorldArchetype THE_SKYHELL, THE_SKYEND;
 
     static {
-        THE_SKYHELL = WorldCreationSettings.builder().from(WorldCreationSettingsTypes.THE_NETHER).generatorModifiers(WorldGeneratorModifiers.SKYLANDS)
+        THE_SKYHELL = WorldArchetype.builder().from(WorldArchetypes.THE_NETHER).generatorModifiers(WorldGeneratorModifiers.SKYLANDS)
                 .build("the_skyhell", "The SkyHell");
 
-        THE_SKYEND = WorldCreationSettings.builder().from(WorldCreationSettingsTypes.THE_END).generatorModifiers(WorldGeneratorModifiers.SKYLANDS)
+        THE_SKYEND = WorldArchetype.builder().from(WorldArchetypes.THE_END).generatorModifiers(WorldGeneratorModifiers.SKYLANDS)
                 .build("the_skyend", "The SkyEnd");
     }
 
@@ -77,14 +77,14 @@ public class WorldsTest {
 
     @Listener
     public void onGameStartingServerEvent(GameStartingServerEvent event) {
-        createAndLoadWorld("end", WorldCreationSettingsTypes.THE_END);
-        createAndLoadWorld("nether", WorldCreationSettingsTypes.THE_NETHER);
-        createAndLoadWorld("skylands", WorldCreationSettingsTypes.THE_SKYLANDS);
+        createAndLoadWorld("end", WorldArchetypes.THE_END);
+        createAndLoadWorld("nether", WorldArchetypes.THE_NETHER);
+        createAndLoadWorld("skylands", WorldArchetypes.THE_SKYLANDS);
         createAndLoadWorld("skyend", THE_SKYEND);
         createAndLoadWorld("skyhell", THE_SKYHELL);
     }
 
-    private void createAndLoadWorld(String folderName, WorldCreationSettings settings) {
+    private void createAndLoadWorld(String folderName, WorldArchetype settings) {
         try {
             final WorldProperties properties = Sponge.getServer().createWorldProperties(folderName, settings);
             Sponge.getServer().loadWorld(properties);
@@ -183,7 +183,7 @@ public class WorldsTest {
         }
 
         @Override
-        public List<String> getSuggestions(CommandSource source, String arguments) throws CommandException {
+        public List<String> getSuggestions(CommandSource source, String arguments, Location<World> pos) throws CommandException {
             return new ArrayList<>();
         }
     }
