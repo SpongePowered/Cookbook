@@ -112,8 +112,8 @@ public class Smite {
         logger.info("Initializing smite command!!!!");
 
         CommandSpec myCommandSpec = CommandSpec.builder()
-            .description(Text.of("Hello World Command"))
-            .permission("myplugin.command.helloworld")
+            .description(Text.of("Smite Command"))
+            .permission("smiteplugin.command.smite")
             .arguments(
                     GenericArguments.onlyOne(GenericArguments.player(Text.of("player"))),
                     GenericArguments.remainingJoinedStrings(Text.of("message")))
