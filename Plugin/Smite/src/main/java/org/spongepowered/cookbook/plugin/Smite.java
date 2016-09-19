@@ -69,35 +69,35 @@ import com.google.inject.Inject;
         description = "Use me on your enemies")
 public class Smite {
 
-	public static class SmiteCommand implements CommandExecutor {
+    public static class SmiteCommand implements CommandExecutor {
 
-		private Logger logger;
+        private Logger logger;
 
-		public SmiteCommand(Logger logger) {
-			this.logger = logger;
-		}
+        public SmiteCommand(Logger logger) {
+            this.logger = logger;
+        }
 
-		@Override
-		public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+        @Override
+        public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 
-			Player player = args.<Player>getOne("player").get();
-			String message = args.<String>getOne("message").get();
+            Player player = args.<Player>getOne("player").get();
+            String message = args.<String>getOne("message").get();
 
-			final String name = player.getName();
-			logger.info("Executing command on player: {} with message: {}", name, message);
+            final String name = player.getName();
+            logger.info("Executing command on player: {} with message: {}", name, message);
 
-			src.sendMessage(Text.of("Smiting " + name + "!  " + message));
+            src.sendMessage(Text.of("Smiting " + name + "!  " + message));
 
-			Vector3i blockPosition = player.getLocation().getBlockPosition();
-			final Optional<Entity> optionalEntity = Optional
-					.of(player.getWorld().createEntity(EntityTypes.LIGHTNING, blockPosition));
-			optionalEntity.ifPresent(entity -> player.getWorld().spawnEntity(entity,
-					Cause.source(EntitySpawnCause.builder().entity(entity).type(SpawnTypes.PLUGIN).build()).build()));
+            Vector3i blockPosition = player.getLocation().getBlockPosition();
+            final Optional<Entity> optionalEntity = Optional
+                    .of(player.getWorld().createEntity(EntityTypes.LIGHTNING, blockPosition));
+            optionalEntity.ifPresent(entity -> player.getWorld().spawnEntity(entity,
+                    Cause.source(EntitySpawnCause.builder().entity(entity).type(SpawnTypes.PLUGIN).build()).build()));
 
-			return CommandResult.success();
-		}
+            return CommandResult.success();
+        }
 
-	}
+    }
 
     private static final int MAX_DISTANCE = 100;
 
