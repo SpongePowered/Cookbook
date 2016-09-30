@@ -38,7 +38,7 @@ import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.entity.projectile.explosive.fireball.LargeFireball
 import org.spongepowered.api.entity.projectile.{Projectile, Snowball}
 import org.spongepowered.api.event.block.InteractBlockEvent
-import org.spongepowered.api.event.cause.entity.spawn.{SpawnCause, SpawnTypes}
+import org.spongepowered.api.event.cause.entity.spawn.{EntitySpawnCause, SpawnTypes}
 import org.spongepowered.api.event.cause.{Cause, NamedCause}
 import org.spongepowered.api.event.filter.cause.First
 import org.spongepowered.api.event.game.state.GameStartingServerEvent
@@ -129,12 +129,13 @@ class ScalaFireball {
         snowball.setShooter(player)
         snowball.offer[lang.Double](Keys.ATTACK_DAMAGE, 4D)
         snowball.offer[lang.Integer](Keys.FIRE_TICKS, 100000)
-        val spawnCause = SpawnCause.builder()
+        val spawnCause = EntitySpawnCause.builder()
           .`type`(SpawnTypes.PROJECTILE)
+          .entity(snowball)
           .build()
-        val cause = Cause.builder()
+        val cause = Cause
+          .source(spawnCause)
           .suggestNamed(NamedCause.THROWER, player)
-          .suggestNamed("SpawnCause", spawnCause)
           .build()
         world.spawnEntity(snowball, cause)
       case _ =>
@@ -155,12 +156,13 @@ class ScalaFireball {
         fireball.offer(Keys.ATTACK_DAMAGE, 8D: lang.Double)
         fireball.offer[lang.Integer](Keys.FIRE_TICKS, 100000: lang.Integer)
         fireball.offer(Keys.EXPLOSION_RADIUS, Optional.of(3: lang.Integer))
-        val spawnCause = SpawnCause.builder()
+        val spawnCause = EntitySpawnCause.builder()
           .`type`(SpawnTypes.PROJECTILE)
+          .entity(fireball)
           .build()
-        val cause = Cause.builder()
+        val cause = Cause
+          .source(spawnCause)
           .suggestNamed(NamedCause.THROWER, player)
-          .suggestNamed("SpawnCause", spawnCause)
           .build()
         world.spawnEntity(fireball, cause)
         fireballMap.put(fireball, velocity)
