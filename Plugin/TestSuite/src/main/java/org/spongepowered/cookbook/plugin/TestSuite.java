@@ -17,12 +17,16 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.extent.ExtentBufferFactory;
 
 import java.util.List;
 import java.util.Optional;
 
-@Plugin(id = "TestSuite", name = "TestSuite", version = "0.3")
+import javax.annotation.Nullable;
+
+@Plugin(id = "sponge_test_suite", name = "TestSuite", version = "0.3", description = "Runtime test suite for sponge implementations")
 public class TestSuite {
 
     public static ExtentBufferFactory EXTENT_BUFFER_FACTORY;
@@ -59,7 +63,7 @@ public class TestSuite {
     private class Commands implements CommandCallable {
 
         @Override
-        public List<String> getSuggestions(CommandSource source, String arguments) throws CommandException {
+        public List<String> getSuggestions(CommandSource source, String arguments, @Nullable Location<World> targetPosition) throws CommandException {
             return null;
         }
 

@@ -78,12 +78,12 @@ public class BlockBufferTest {
     @Test
     public void testBlockBufferRotate() {
         final MutableBlockVolume buffer = TestSuite.EXTENT_BUFFER_FACTORY.createBlockBuffer(3, 2, 1);
-        buffer.setBlock(0, 0, 0, TEST_BLOCKS[0]);
-        buffer.setBlock(1, 0, 0, TEST_BLOCKS[1]);
-        buffer.setBlock(2, 0, 0, TEST_BLOCKS[2]);
-        buffer.setBlock(0, 1, 0, TEST_BLOCKS[3]);
-        buffer.setBlock(1, 1, 0, TEST_BLOCKS[4]);
-        buffer.setBlock(2, 1, 0, TEST_BLOCKS[5]);
+        buffer.setBlock(0, 0, 0, TEST_BLOCKS[0], null);
+        buffer.setBlock(1, 0, 0, TEST_BLOCKS[1], null);
+        buffer.setBlock(2, 0, 0, TEST_BLOCKS[2], null);
+        buffer.setBlock(0, 1, 0, TEST_BLOCKS[3], null);
+        buffer.setBlock(1, 1, 0, TEST_BLOCKS[4], null);
+        buffer.setBlock(2, 1, 0, TEST_BLOCKS[5], null);
         // 90 degrees
         final DiscreteTransform3 _90degrees = DiscreteTransform3.rotationAroundCenter(1, Axis.Y, buffer.getBlockSize());
         MutableBlockVolume rotated = buffer.getBlockView(_90degrees);
@@ -150,7 +150,7 @@ public class BlockBufferTest {
         for (int x = min.getX(); x <= max.getX(); x++) {
             for (int y = min.getY(); y <= max.getY(); y++) {
                 for (int z = min.getZ(); z <= max.getZ(); z++) {
-                    copy.setBlock(x, y, z, BlockTypes.REDSTONE_ORE.getDefaultState());
+                    copy.setBlock(x, y, z, BlockTypes.REDSTONE_ORE.getDefaultState(), null);
                 }
             }
         }
@@ -182,7 +182,7 @@ public class BlockBufferTest {
             for (int y = min.getY(); y <= max.getY(); y++) {
                 for (int z = min.getZ(); z <= max.getZ(); z++) {
                     final BlockState randomBlock = getRandomBlock();
-                    buffer.setBlock(x, y, z, randomBlock);
+                    buffer.setBlock(x, y, z, randomBlock, null);
                     Assert.assertEquals(randomBlock, buffer.getBlock(x, y, z));
                 }
             }

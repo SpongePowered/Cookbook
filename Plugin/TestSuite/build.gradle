@@ -28,7 +28,7 @@ repositories {
 }
 
 dependencies {
-    compile 'org.spongepowered:spongeapi:3.1.0-SNAPSHOT'
+    compile 'org.spongepowered:spongeapi:5.0.0-SNAPSHOT'
     compile 'junit:junit:4.12'
 }
 

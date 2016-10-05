@@ -1,13 +1,13 @@
 package org.spongepowered.cookbook.plugin;
 
-import com.flowpowered.math.vector.Vector2i;
+import com.flowpowered.math.vector.Vector3i;
 import org.junit.Assert;
 import org.junit.Test;
-import org.spongepowered.api.util.DiscreteTransform2;
+import org.spongepowered.api.util.DiscreteTransform3;
 import org.spongepowered.api.world.biome.BiomeType;
 import org.spongepowered.api.world.biome.BiomeTypes;
-import org.spongepowered.api.world.extent.MutableBiomeArea;
-import org.spongepowered.api.world.extent.worker.MutableBiomeAreaWorker;
+import org.spongepowered.api.world.extent.MutableBiomeVolume;
+import org.spongepowered.api.world.extent.worker.MutableBiomeVolumeWorker;
 
 import java.util.HashSet;
 import java.util.Random;
@@ -22,25 +22,25 @@ public class BiomeWorkerTest {
 
     @Test
     public void testFill() {
-        final MutableBiomeArea area = TestSuite.EXTENT_BUFFER_FACTORY.createBiomeBuffer(20, 15);
-        final Vector2i min = area.getBiomeMin();
-        final Vector2i max = area.getBiomeMax();
+        final MutableBiomeVolume volume = TestSuite.EXTENT_BUFFER_FACTORY.createBiomeBuffer(20, 1, 15);
+        final Vector3i min = volume.getBiomeMin();
+        final Vector3i max = volume.getBiomeMax();
         // Fill the reference with random biomes using regular iteration
-        final MutableBiomeArea reference = TestSuite.EXTENT_BUFFER_FACTORY.createBiomeBuffer(20, 15);
+        final MutableBiomeVolume reference = TestSuite.EXTENT_BUFFER_FACTORY.createBiomeBuffer(20, 1, 15);
         for (int x = min.getX(); x <= max.getX(); x++) {
-            for (int y = min.getY(); y <= max.getY(); y++) {
-                reference.setBiome(x, y, BiomeBufferTest.getRandomBiome());
+            for (int z = min.getY(); z <= max.getY(); z++) {
+                reference.setBiome(x, 0, z, BiomeBufferTest.getRandomBiome());
 
             }
         }
         // Use the fill function to copy the reference
-        final MutableBiomeAreaWorker<? extends MutableBiomeArea> worker = area.getBiomeWorker();
+        final MutableBiomeVolumeWorker<? extends MutableBiomeVolume> worker = volume.getBiomeWorker();
         worker.fill(reference::getBiome);
-        // Check if area and reference are the same
+        // Check if volume and reference are the same
         for (int x = min.getX(); x <= max.getX(); x++) {
-            for (int y = min.getY(); y <= max.getY(); y++) {
-                Assert.assertNotEquals(BiomeTypes.SKY, area.getBiome(x, y));
-                Assert.assertEquals(reference.getBiome(x, y), area.getBiome(x, y));
+            for (int z = min.getY(); z <= max.getY(); z++) {
+                Assert.assertNotEquals(BiomeTypes.SKY, volume.getBiome(x, 0, z));
+                Assert.assertEquals(reference.getBiome(x, 0, z), volume.getBiome(x, 0, z));
 
             }
         }
@@ -48,22 +48,22 @@ public class BiomeWorkerTest {
 
     @Test
     public void testMap() {
-        final MutableBiomeArea area = TestSuite.EXTENT_BUFFER_FACTORY.createBiomeBuffer(20, 15);
-        final Vector2i min = area.getBiomeMin();
-        final Vector2i max = area.getBiomeMax();
+        final MutableBiomeVolume volume = TestSuite.EXTENT_BUFFER_FACTORY.createBiomeBuffer(20, 1, 15);
+        final Vector3i min = volume.getBiomeMin();
+        final Vector3i max = volume.getBiomeMax();
         // Fill the reference with either sky or a random biome
-        final MutableBiomeArea reference = TestSuite.EXTENT_BUFFER_FACTORY.createBiomeBuffer(20, 15);
-        final MutableBiomeAreaWorker<? extends MutableBiomeArea> worker = reference.getBiomeWorker();
-        worker.fill((x, y) -> RANDOM.nextBoolean() ? BiomeTypes.SKY : BiomeBufferTest.getRandomBiome());
-        // Map sky to a random biome and anything else to sky into a new area
-        worker.map(((v, x, y) -> v.getBiome(x, y).equals(BiomeTypes.SKY) ? BiomeBufferTest.getRandomBiome() : BiomeTypes.SKY), area);
-        // Check if area and reference follow the mapping rule
+        final MutableBiomeVolume reference = TestSuite.EXTENT_BUFFER_FACTORY.createBiomeBuffer(20, 1, 15);
+        final MutableBiomeVolumeWorker<? extends MutableBiomeVolume> worker = reference.getBiomeWorker();
+        worker.fill((x, y, z) -> RANDOM.nextBoolean() ? BiomeTypes.SKY : BiomeBufferTest.getRandomBiome());
+        // Map sky to a random biome and anything else to sky into a new volume
+        worker.map(((v, x, y, z) -> v.getBiome(x, y, z).equals(BiomeTypes.SKY) ? BiomeBufferTest.getRandomBiome() : BiomeTypes.SKY), volume);
+        // Check if volume and reference follow the mapping rule
         for (int x = min.getX(); x <= max.getX(); x++) {
-            for (int y = min.getY(); y <= max.getY(); y++) {
-                if (reference.getBiome(x, y).equals(BiomeTypes.SKY)) {
-                    Assert.assertNotEquals(BiomeTypes.SKY, area.getBiome(x, y));
+            for (int z = min.getY(); z <= max.getY(); z++) {
+                if (reference.getBiome(x, 0, z).equals(BiomeTypes.SKY)) {
+                    Assert.assertNotEquals(BiomeTypes.SKY, volume.getBiome(x, 0, z));
                 } else {
-                    Assert.assertEquals(BiomeTypes.SKY, area.getBiome(x, y));
+                    Assert.assertEquals(BiomeTypes.SKY, volume.getBiome(x, 0, z));
                 }
             }
         }
@@ -71,38 +71,38 @@ public class BiomeWorkerTest {
 
     @Test
     public void testMerge() {
-        final MutableBiomeArea area = TestSuite.EXTENT_BUFFER_FACTORY.createBiomeBuffer(20, 15);
-        final Vector2i min = area.getBiomeMin();
-        final Vector2i max = area.getBiomeMax();
-        // Fill two references with either sky or a random biome (also test with different sized areas)
-        final MutableBiomeArea reference1 = TestSuite.EXTENT_BUFFER_FACTORY.createBiomeBuffer(20, 15);
-        final MutableBiomeAreaWorker<? extends MutableBiomeArea> worker1 = reference1.getBiomeWorker();
-        worker1.fill((x, y) -> RANDOM.nextBoolean() ? BiomeTypes.SKY : BiomeBufferTest.getRandomBiome());
-        final MutableBiomeArea reference2 = TestSuite.EXTENT_BUFFER_FACTORY.createBiomeBuffer(22, 18);
-        final MutableBiomeArea shiftedReference2 = reference2.getBiomeView(DiscreteTransform2.fromTranslation(-42, 71));
-        final MutableBiomeAreaWorker<? extends MutableBiomeArea> worker2 = reference1.getBiomeWorker();
-        worker2.fill((x, y) -> RANDOM.nextBoolean() ? BiomeTypes.SKY : BiomeBufferTest.getRandomBiome());
+        final MutableBiomeVolume volume = TestSuite.EXTENT_BUFFER_FACTORY.createBiomeBuffer(20, 1, 15);
+        final Vector3i min = volume.getBiomeMin();
+        final Vector3i max = volume.getBiomeMax();
+        // Fill two references with either sky or a random biome (also test with different sized volumes)
+        final MutableBiomeVolume reference1 = TestSuite.EXTENT_BUFFER_FACTORY.createBiomeBuffer(20, 1, 15);
+        final MutableBiomeVolumeWorker<? extends MutableBiomeVolume> worker1 = reference1.getBiomeWorker();
+        worker1.fill((x, y, z) -> RANDOM.nextBoolean() ? BiomeTypes.SKY : BiomeBufferTest.getRandomBiome());
+        final MutableBiomeVolume reference2 = TestSuite.EXTENT_BUFFER_FACTORY.createBiomeBuffer(22, 1, 18);
+        final MutableBiomeVolume shiftedReference2 = reference2.getBiomeView(DiscreteTransform3.fromTranslation(-42, 0, 71));
+        final MutableBiomeVolumeWorker<? extends MutableBiomeVolume> worker2 = reference1.getBiomeWorker();
+        worker2.fill((x, y, z) -> RANDOM.nextBoolean() ? BiomeTypes.SKY : BiomeBufferTest.getRandomBiome());
         // Merge by using the non-sky if one of the two biomes isn't sky or using the first for any other case
-        worker1.merge(shiftedReference2, (firstArea, xFirst, yFirst, secondArea, xSecond, ySecond) -> {
-                final BiomeType firstBiome = firstArea.getBiome(xFirst, yFirst);
-                final BiomeType secondBiome = secondArea.getBiome(xSecond, ySecond);
+        worker1.merge(shiftedReference2, (firstVolume, xFirst, yFirst, zFirst, secondVolume, xSecond, ySecond, zSecond) -> {
+                final BiomeType firstBiome = firstVolume.getBiome(xFirst, yFirst, zFirst);
+                final BiomeType secondBiome = secondVolume.getBiome(xSecond, ySecond, zSecond);
                 if (firstBiome.equals(BiomeTypes.SKY) && !secondBiome.equals(BiomeTypes.SKY)) {
                     return secondBiome;
                 }
                 return firstBiome;
             },
-            area);
-        // Check if area and references follow the merging rule
+            volume);
+        // Check if volume and references follow the merging rule
         for (int x = min.getX(); x <= max.getX(); x++) {
-            for (int y = min.getY(); y <= max.getY(); y++) {
-                final BiomeType biome = area.getBiome(x, y);
+            for (int z = min.getY(); z <= max.getY(); z++) {
+                final BiomeType biome = volume.getBiome(x, 0, z);
                 if (biome.equals(BiomeTypes.SKY)) {
-                    Assert.assertEquals(BiomeTypes.SKY, reference1.getBiome(x, y));
-                    Assert.assertEquals(BiomeTypes.SKY, reference2.getBiome(x, y));
-                } else if (reference1.getBiome(x, y).equals(BiomeTypes.SKY)) {
-                    Assert.assertEquals(reference2.getBiome(x, y), biome);
+                    Assert.assertEquals(BiomeTypes.SKY, reference1.getBiome(x, 0, z));
+                    Assert.assertEquals(BiomeTypes.SKY, reference2.getBiome(x, 0, z));
+                } else if (reference1.getBiome(x, 0, z).equals(BiomeTypes.SKY)) {
+                    Assert.assertEquals(reference2.getBiome(x, 0, z), biome);
                 } else {
-                    Assert.assertEquals(reference1.getBiome(x, y), biome);
+                    Assert.assertEquals(reference1.getBiome(x, 0, z), biome);
                 }
             }
         }
@@ -110,54 +110,54 @@ public class BiomeWorkerTest {
 
     @Test
     public void testReduce() {
-        final MutableBiomeArea area = TestSuite.EXTENT_BUFFER_FACTORY.createBiomeBuffer(20, 15);
-        final Vector2i min = area.getBiomeMin();
-        final Vector2i max = area.getBiomeMax();
-        // Fill the area with either sky or a random biome and hash the coordinate of sky biomes
+        final MutableBiomeVolume volume = TestSuite.EXTENT_BUFFER_FACTORY.createBiomeBuffer(20, 1, 15);
+        final Vector3i min = volume.getBiomeMin();
+        final Vector3i max = volume.getBiomeMax();
+        // Fill the volume with either sky or a random biome and hash the coordinate of sky biomes
         int skyHash = 0;
         for (int x = min.getX(); x <= max.getX(); x++) {
-            for (int y = min.getY(); y <= max.getY(); y++) {
+            for (int z = min.getY(); z <= max.getY(); z++) {
                 final BiomeType biome;
                 if (RANDOM.nextBoolean()) {
                     biome = BiomeTypes.SKY;
-                    skyHash += x | y;
+                    skyHash += x | z;
                 } else {
                     biome = BiomeBufferTest.getRandomBiome();
                 }
-                area.setBiome(x, y, biome);
+                volume.setBiome(x, 0, z, biome);
             }
         }
         // Reduce by hashing the coordinates of sky biomes
-        final MutableBiomeAreaWorker<? extends MutableBiomeArea> worker = area.getBiomeWorker();
-        final int reduction = worker.reduce((v, x, y, r) -> r + (v.getBiome(x, y).equals(BiomeTypes.SKY) ? x | y : 0), (a, b) -> a + b, 0);
+        final MutableBiomeVolumeWorker<? extends MutableBiomeVolume> worker = volume.getBiomeWorker();
+        final int reduction = worker.reduce((v, x, y, z, r) -> r + (v.getBiome(x, y, z).equals(BiomeTypes.SKY) ? x | z : 0), (a, b) -> a + b, 0);
         Assert.assertEquals(skyHash, reduction);
     }
 
     @Test
     public void testIterate() {
-        final MutableBiomeArea area = TestSuite.EXTENT_BUFFER_FACTORY.createBiomeBuffer(20, 15);
-        final Vector2i min = area.getBiomeMin();
-        final Vector2i max = area.getBiomeMax();
-        // Fill the area with either sky or a random biome and add the coordinate of sky biomes
-        final Set<Vector2i> skyCoordinates = new HashSet<>();
+        final MutableBiomeVolume volume = TestSuite.EXTENT_BUFFER_FACTORY.createBiomeBuffer(20, 1, 15);
+        final Vector3i min = volume.getBiomeMin();
+        final Vector3i max = volume.getBiomeMax();
+        // Fill the volume with either sky or a random biome and add the coordinate of sky biomes
+        final Set<Vector3i> skyCoordinates = new HashSet<>();
         for (int x = min.getX(); x <= max.getX(); x++) {
-            for (int y = min.getY(); y <= max.getY(); y++) {
+            for (int z = min.getY(); z <= max.getY(); z++) {
                 final BiomeType biome;
                 if (RANDOM.nextBoolean()) {
                     biome = BiomeTypes.SKY;
-                    skyCoordinates.add(new Vector2i(x, y));
+                    skyCoordinates.add(new Vector3i(x, 0, z));
                 } else {
                     biome = BiomeBufferTest.getRandomBiome();
                 }
-                area.setBiome(x, y, biome);
+                volume.setBiome(x, 0, z, biome);
             }
         }
         // Iterate and add the coordinates of sky biomes
-        final MutableBiomeAreaWorker<? extends MutableBiomeArea> worker = area.getBiomeWorker();
-        final Set<Vector2i> coordinates = new HashSet<>();
-        worker.iterate((v, x, y) -> {
-            if (v.getBiome(x, y).equals(BiomeTypes.SKY)) {
-                coordinates.add(new Vector2i(x, y));
+        final MutableBiomeVolumeWorker<? extends MutableBiomeVolume> worker = volume.getBiomeWorker();
+        final Set<Vector3i> coordinates = new HashSet<>();
+        worker.iterate((v, x, y, z) -> {
+            if (v.getBiome(x, y, z).equals(BiomeTypes.SKY)) {
+                coordinates.add(new Vector3i(x, y, z));
             }
         });
         Assert.assertEquals(skyCoordinates, coordinates);
