@@ -1,29 +1,16 @@
 // BlankCanvas Plugin build.gradle
 
 plugins {
-   id 'java-gradle-plugin'
    id 'java'
    id 'checkstyle'
+   id 'org.spongepowered.plugin' version '0.6'
    id 'net.minecrell.licenser' version '0.3'
 }
 
 
 defaultTasks 'licenseFormat', 'build'
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
-
 version = '1.0'
-
-repositories {
-        mavenLocal()
-        mavenCentral()
-
-        maven {
-            name = 'Sponge maven repo'
-            url = 'http://repo.spongepowered.org/maven'
-        }
-}
 
 checkstyle {
     configProperties = [
