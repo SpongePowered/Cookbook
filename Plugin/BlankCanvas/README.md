@@ -18,9 +18,24 @@ One method to build it is just to navigate to the Plugin folder and run `gradlew
 3. `gradlew clean build`
 
 
+## Debugging Sponge Plugins
+
+In general there are work-flows that have been documented
+by the Sponge Powered team to show you the best practices
+for debugging Sponge Plugins.  
+[SpongePowered Plugin Debugging](https://docs.spongepowered.org/master/en/plugin/debugging.html)
+
+
 ## How debug/run within *IDEA* (SpongeForge + BlankCanvas)
 
-Follow the directions on GitHub for SpongePowered.  Especially these steps:
+For those who do work in IDEA, there are some additional notes to consider.
+
+Refer to the SpongePowered documentation:
+
+[Walk-throughs for IDEA and Sponge Plugin Debugging](https://docs.spongepowered.org/master/en/plugin/tutorials.html)
+
+Follow the [directions on GitHub for SpongePowered.](https://github.com/SpongePowered/SpongeForge)
+
 
 1. `git clone --recursive https://github.com/SpongePowered/SpongeForge.git`
 2. `cd SpongeForge`
