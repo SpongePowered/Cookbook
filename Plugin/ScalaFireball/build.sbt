@@ -1,19 +1,12 @@
-import sbt.Keys._
-
 name := "ScalaFireball"
-
-version := "1.1"
-
-name := "ScalaFireball"
-
+version := "1.2"
 organization := "org.spongepowered.cookbook.plugin"
 
-scalaVersion := "2.11.1"
+scalaVersion := "2.11.8"
 
-libraryDependencies += "org.spongepowered" % "spongeapi" % "3.0.0"
+resolvers += "SpongePowered" at "https://repo.spongepowered.org/maven"
+libraryDependencies += "org.spongepowered" % "spongeapi" % "5.0.0-SNAPSHOT" % Provided
 
-resolvers += "SpongePowered" at "http://repo.spongepowered.org/maven"
-
-lazy val scalaFireball = Project( "ScalaFireball", file("."))
-
-
+assemblyShadeRules in assembly := Seq(
+	ShadeRule.rename("scala.**" -> "org.spongepowered.cookbook.plugin.shade.scala.@1").inAll
+)
