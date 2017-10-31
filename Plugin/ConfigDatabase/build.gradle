@@ -3,7 +3,7 @@ apply plugin: 'java'
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
-version = '0.2'
+version = '0.3'
 
 repositories {
     mavenCentral()
@@ -14,5 +14,5 @@ repositories {
 }
 
 dependencies {
-    compile "org.spongepowered:spongeapi:3.0.0"
+    compile "org.spongepowered:spongeapi:6.0.0"
 }

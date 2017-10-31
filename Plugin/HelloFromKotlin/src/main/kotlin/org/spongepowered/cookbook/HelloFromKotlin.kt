@@ -3,6 +3,7 @@ package org.spongepowered.cookbook
 import com.google.inject.Inject
 import org.slf4j.Logger
 import org.spongepowered.api.Game
+import org.spongepowered.api.Platform.Component
 import org.spongepowered.api.command.CommandResult
 import org.spongepowered.api.command.spec.CommandSpec
 import org.spongepowered.api.entity.living.player.Player
@@ -17,7 +18,7 @@ import java.net.URL
 
 // Plugins are declared in basically the same way as Java.
 @Plugin(id = "HelloFromKotlin", name = "Hello From Kotlin!", version = "1.0.1")
-public class HelloFromKotlin {
+class HelloFromKotlin {
 
     // In Kotlin, types are non-nullable by default. Normally, you would have
     // declared this value as "var game: Game?" to indicate nullability, which
@@ -57,10 +58,14 @@ public class HelloFromKotlin {
 
         // Note the semicolons! (Oh wait, the compiler knows when you don't
         // need them.)
-        logger.info("Hello from Kotlin <3 (This is version ${getVersion()}" +
-                " running on ${game.platform.implementation.name}" +
-                " for ${game.platform.minecraftVersion.name})")
-        // Template strings are cool.
+
+        // Template and multiline strings are cool.
+        logger.info("""
+            Hello from Kotlin <3 (This is version ${getVersion()} running on
+            ${game.platform.getContainer(Component.IMPLEMENTATION).name} for
+            ${game.platform.minecraftVersion.name})
+        """.trimIndent())
+
 
         game.eventManager.registerListener(this,
                 ClientConnectionEvent.Join::class.java,
@@ -93,7 +98,7 @@ public class HelloFromKotlin {
 }
 
 // Multiple public classes in one file? Yep.
-public class HelloListener : EventListener<ClientConnectionEvent.Join> {
+class HelloListener : EventListener<ClientConnectionEvent.Join> {
 
     // override is a necessary keyword.
     override fun handle(event: ClientConnectionEvent.Join) {

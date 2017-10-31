@@ -1,22 +1,12 @@
-buildscript {
-    repositories {
-        jcenter()
-        maven {
-            url 'http://oss.sonatype.org/content/repositories/snapshots'
-        }
-        jcenter()
-    }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.2'
-    }
+
+plugins {
+    id "org.jetbrains.kotlin.jvm" version "1.1.51"
+    // Kotlin's stdlib and such need to be shadowed in.
+    id 'com.github.johnrengelman.shadow' version '2.0.1'
 }
 
-apply plugin: 'kotlin'
-// Kotlin's stdlib and such need to be shadowed in.
-apply plugin: 'com.github.johnrengelman.shadow'
+version = '1.1.1'
 
-version = '1.0.1'
 
 repositories {
     jcenter()
@@ -30,18 +20,11 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
     compile "org.jetbrains.kotlin:kotlin-runtime:$kotlinVersion"
-    compile 'org.spongepowered:spongeapi:3.0.0'
+    // We don't want to include sponge in the shadow jar
+    compileOnly 'org.spongepowered:spongeapi:6.0.0'
 }
 
 sourceSets {
     // Kotlin finds code from the java source directory, so rename it to kotlin
     main.java.srcDirs += 'src/main/kotlin'
-}
-
-shadowJar {
-    dependencies {
-        include dependency("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
-        include dependency("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
-        include dependency("org.jetbrains.kotlin:kotlin-runtime:$kotlinVersion")
-    }
 }

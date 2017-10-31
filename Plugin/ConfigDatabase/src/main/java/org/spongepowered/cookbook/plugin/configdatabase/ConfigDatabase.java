@@ -94,26 +94,25 @@ public class ConfigDatabase {
                 getDefaultConfig().createNewFile();
                 this.config = getConfigManager().load();
 
-            // This is a simple configuration node living in the 'top' path of your config file.
-            // Here, you can put global configuration variables, such as a version number (for detecting
-            // whether you need to integrate new changes to your config file structure into an existing
-            // config file)
-            //
+                // This is a simple configuration node living in the 'top' path of your config file.
+                // Here, you can put global configuration variables, such as a version number (for detecting
+                // whether you need to integrate new changes to your config file structure into an existing
+                // config file)
 
-            this.config.getNode("ConfigVersion").setValue(1);
+                this.config.getNode("ConfigVersion").setValue(1);
 
-            // This is a set of pathed config nodes, living in the DB 'folder' of the config file.
-            // Splitting your config variables like this produces sections to the config file, making sure
-            // all config variables relating to eachother can be grouped together.
-            // Also useful for passing only parts of your config to other modules; see below.
+                // This is a set of pathed config nodes, living in the DB 'folder' of the config file.
+                // Splitting your config variables like this produces sections to the config file, making sure
+                // all config variables relating to eachother can be grouped together.
+                // Also useful for passing only parts of your config to other modules; see below.
 
-            this.config.getNode("DB", "Host").setValue("127.0.0.1");
-            this.config.getNode("DB", "Port").setValue(3306);
-            this.config.getNode("DB", "Username").setValue("SpongePlots");
-            this.config.getNode("DB", "Password").setValue("YouReallyShouldChangeMe");
-            this.config.getNode("DB", "Configured").setValue(false);
-            getConfigManager().save(this.config);
-            getLogger().info("Created default configuration, ConfigDatabase will not run until you have edited this file!");
+                this.config.getNode("DB", "Host").setValue("127.0.0.1");
+                this.config.getNode("DB", "Port").setValue(3306);
+                this.config.getNode("DB", "Username").setValue("SpongePlots");
+                this.config.getNode("DB", "Password").setValue("YouReallyShouldChangeMe");
+                this.config.getNode("DB", "Configured").setValue(false);
+                getConfigManager().save(this.config);
+                getLogger().info("Created default configuration, ConfigDatabase will not run until you have edited this file!");
 
             }
 

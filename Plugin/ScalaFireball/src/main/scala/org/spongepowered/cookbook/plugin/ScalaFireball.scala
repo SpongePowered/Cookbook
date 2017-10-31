@@ -28,45 +28,68 @@ package org.spongepowered.cookbook.plugin
 import com.flowpowered.math.vector.Vector3d
 import com.google.inject.Inject
 import java.util.Optional
+
+import scala.collection.mutable
+
 import org.spongepowered.api.Sponge
+import org.spongepowered.api.data.`type`.HandTypes
 import org.spongepowered.api.data.key.Keys
 import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.entity.projectile.explosive.fireball.LargeFireball
 import org.spongepowered.api.entity.projectile.{Projectile, Snowball}
-import org.spongepowered.api.entity.{Entity, EntityTypes}
-import org.spongepowered.api.event.{Order, Listener}
+import org.spongepowered.api.entity.EntityTypes
+import org.spongepowered.api.event.{Listener, Order}
 import org.spongepowered.api.event.block.InteractBlockEvent
-import org.spongepowered.api.event.cause.Cause
+import org.spongepowered.api.event.cause.{Cause, NamedCause}
 import org.spongepowered.api.event.game.state.GameStartingServerEvent
 import org.spongepowered.api.event.filter.cause.First
 import org.spongepowered.api.item.ItemTypes
-import org.spongepowered.api.item.inventory.ItemStack
 import org.spongepowered.api.plugin.{Plugin, PluginContainer}
 import org.spongepowered.api.text.format.TextColors
 import org.spongepowered.api.text.Text
 import org.spongepowered.api.world.World
 
 object ScalaFireball {
-  val NoPermission = Text.of(TextColors.RED,
+  val NoPermission: Text = Text.of(TextColors.RED,
     "Hey! you don't have permission for large fireballs... NOOB!!")
 
   private def getVelocity(player: Player, multiplier: Double): Vector3d = {
-    val yaw: Double = (player.getRotation.getY + 90) % 360
-    val pitch: Double = player.getRotation.getX * -1
-    val rotYCos: Double = Math.cos(Math.toRadians(pitch))
-    val rotYSin: Double = Math.sin(Math.toRadians(pitch))
-    val rotXCos: Double = Math.cos(Math.toRadians(yaw))
-    val rotXSin: Double = Math.sin(Math.toRadians(yaw))
+    // When using Scala, you don't have to specify the types for values, or
+    // use semicolons at the end of statements. It's still recommended to
+    // put the type annotation for public values though.
+
+    val yaw = (player.getRotation.getY + 90) % 360
+    val pitch = player.getRotation.getX * -1
+    val rotYCos = Math.cos(Math.toRadians(pitch))
+    val rotYSin = Math.sin(Math.toRadians(pitch))
+    val rotXCos = Math.cos(Math.toRadians(yaw))
+    val rotXSin = Math.sin(Math.toRadians(yaw))
     new Vector3d((multiplier * rotYCos) * rotXCos, multiplier * rotYSin, (multiplier * rotYCos) * rotXSin)
+  }
+
+  // In scala you can define extra methods on an existing class using what's
+  // called implicit classes. Here we define a method on Optional to convert
+  // it into Scala's own type for representing a value that might be missing
+  implicit class RichOptional[A](private val optional: Optional[A]) extends AnyVal {
+    def asOption: Option[A] = optional.map(Option.apply(_)).orElse(None)
   }
 }
 
 @Plugin(id = "ScalaFireballs", name = "ScalaFireballs", version = "1.1")
 class ScalaFireball {
-  private final val fireballMap: java.util.WeakHashMap[Projectile, Vector3d] =
-    new java.util.WeakHashMap[Projectile, Vector3d]
+
+  // To use our implicit class we need to import it
+  import ScalaFireball.RichOptional
+
+  // Scala has it's own collection library, filled with many collections
+  // similar to the ones found in java, in addition to many new ones.
+  private val fireballMap: mutable.WeakHashMap[Projectile, Vector3d] =
+    mutable.WeakHashMap.empty[Projectile, Vector3d]
+
+  // In scala when defining a missing value, a missing value (null, 0, and so on)
+  // a underscore can be used instead
   @Inject
-  private val container: PluginContainer = null
+  private val container: PluginContainer = _
 
   @Listener
   def onStarting(event: GameStartingServerEvent) {
@@ -78,62 +101,82 @@ class ScalaFireball {
 
   @Listener(order = Order.POST)
   def onInteract(event: InteractBlockEvent, @First player: Player) {
-    val option: Optional[ItemStack] = player.getItemInHand
-    if (option.isPresent) {
-      option.get.getItem match {
-        case ItemTypes.STICK => spawnFireball(player)
-        case ItemTypes.BLAZE_ROD =>
-          if (player.hasPermission("simplefireball.large"))
-            spawnLargeFireball(player)
-          else
-            player.sendMessage(ScalaFireball.NoPermission)
-        case _ =>
+    val optItem = player.getItemInHand(HandTypes.MAIN_HAND).asOption
+      .orElse(player.getItemInHand(HandTypes.OFF_HAND).asOption)
 
+    // In scala we almost never check if an option is defined. Instead we
+    // either treat it like a list with a single element, or we do
+    // use pattern matching on it.
+    optItem.foreach { stack =>
+
+      // In scala you can perform tests on a value and perform code based on
+      // the result of that test. It's kind of like an if expression, except
+      // that you're not limited to testing against a boolean expression.
+      // You can test against the type, if it's a specific value (as we do here),
+      // you can extract values as is common to do with Option, and more.
+      stack.getItem match {
+        case ItemTypes.STICK => spawnFireball(player)
+        // We can also combine these tests. Here we test if it's a specific
+        // value, and then test if the player has the needed permissions.
+        case ItemTypes.BLAZE_ROD if player.hasPermission("simplefireball.large") =>
+          spawnLargeFireball(player)
+        case ItemTypes.BLAZE_ROD => player.sendMessage(ScalaFireball.NoPermission)
+        case _ =>
+        // We need to add a base case at the end if we haven't covered all
+        // possible values. If you don't do this you get an exception.
+        // Don't worry though. The compiler will tell you if you
+        // missed anything in some cases where it can tell what all the
+        // possible values to match are.
       }
     }
   }
 
   private def spawnFireball(player: Player) {
     val world: World = player.getWorld
-    val optional: Optional[Entity] = world.createEntity(EntityTypes.SNOWBALL,
-      player.getLocation.getPosition
-        .add(Math.cos((player.getRotation.getY - 90)
-        % 360) * 0.2,
-          1.8,
-          Math.sin((player.getRotation.getY - 90) % 360) * 0.2))
-    if (optional.isPresent) {
-      val velocity: Vector3d = ScalaFireball.getVelocity(player, 1.5D)
-      optional.get.offer(Keys.VELOCITY, velocity)
-      val fireball: Snowball = optional.get.asInstanceOf[Snowball]
-      fireball.setShooter(player)
-      fireball.offer[java.lang.Double](Keys.ATTACK_DAMAGE, 4)
-      world.spawnEntity(fireball, Cause.of(player))
-      fireball.offer[java.lang.Integer](Keys.FIRE_TICKS, 100000)
+    val entity = world.createEntity(
+      EntityTypes.SNOWBALL, player.getLocation.getPosition.add(
+        Math.cos((player.getRotation.getY - 90) % 360) * 0.2,
+        1.8,
+        Math.sin((player.getRotation.getY - 90) % 360) * 0.2
+      )
+    )
+
+    val velocity = ScalaFireball.getVelocity(player, 1.5D)
+    entity.offer(Keys.VELOCITY, velocity)
+
+    // You normally don't do any casting in Scala. Instead you use pattern
+    // matching on the values.
+    entity match {
+      case fireball: Snowball =>
+        fireball.setShooter(player)
+        fireball.offer(Keys.ATTACK_DAMAGE, Double.box(4D))
+        world.spawnEntity(fireball, Cause.of(NamedCause.owner(player)))
+        fireball.offer(Keys.FIRE_TICKS, Int.box(100000))
+      case _ =>
     }
   }
 
   private def spawnLargeFireball(player: Player) {
-    val world: World = player.getWorld
-    val optional: Optional[Entity] = world.createEntity(EntityTypes.FIREBALL,
-      player.getLocation.getPosition.add(0, 1.8, 0))
-    if (optional.isPresent) {
-      val velocity: Vector3d = ScalaFireball.getVelocity(player, 1.5D)
-      optional.get.offer(Keys.VELOCITY, velocity)
-      val fireball: LargeFireball = optional.get.asInstanceOf[LargeFireball]
-      fireball.setShooter(player)
-      // TODO This vanished after Data API was introduced
-      // fireball.setExplosionPower(3)
-      fireball.offer[java.lang.Double](Keys.ATTACK_DAMAGE, 8)
-      world.spawnEntity(fireball, Cause.of(player))
-      fireballMap.put(fireball, velocity)
+    val world = player.getWorld
+    val entity = world.createEntity(EntityTypes.FIREBALL, player.getLocation.getPosition.add(0, 1.8, 0))
+    val velocity = ScalaFireball.getVelocity(player, 1.5D)
+    entity.offer(Keys.VELOCITY, velocity)
+
+    entity match {
+      case fireball: LargeFireball =>
+        fireball.setShooter(player)
+        fireball.offer(Keys.EXPLOSION_RADIUS, Optional.of(Int.box(3)))
+        fireball.offer(Keys.ATTACK_DAMAGE, Double.box(8))
+        world.spawnEntity(fireball, Cause.of(NamedCause.owner(player)))
+        fireballMap.put(fireball, velocity)
+      case _ =>
     }
   }
 
   class FireballUpdater extends Runnable {
-    def run() {
-      import scala.collection.JavaConversions._
-      for (entry <- fireballMap.entrySet) {
-        entry.getKey.offer(Keys.VELOCITY, entry.getValue)
+    def run(): Unit =  {
+      for ((projectile, speed) <- fireballMap) {
+        projectile.offer(Keys.VELOCITY, speed)
       }
     }
   }
