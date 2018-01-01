@@ -27,6 +27,7 @@ package org.spongepowered.cookbook.plugin;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.google.inject.Inject;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.Entity;
@@ -35,9 +36,6 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.InteractBlockEvent;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.entity.spawn.EntitySpawnCause;
-import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -52,7 +50,7 @@ import java.util.Optional;
 
 @Plugin(id = "ca_sapon_smite",
         name = "Smite",
-        version = "1.0",
+        version = "1.1",
         description = "Use me on your enemies")
 public class Smite {
 
@@ -100,8 +98,9 @@ public class Smite {
         }
         // Smite!
         final Entity entity = player.getWorld().createEntity(EntityTypes.LIGHTNING, closest);
-        player.getWorld().spawnEntity(entity,
-                Cause.source(EntitySpawnCause.builder().entity(entity).type(SpawnTypes.PLUGIN).build()).build().merge(event.getCause()));
+        Sponge.getCauseStackManager().pushCause(entity);
+        player.getWorld().spawnEntity(entity);
+        Sponge.getCauseStackManager().popCause();
     }
 
 }

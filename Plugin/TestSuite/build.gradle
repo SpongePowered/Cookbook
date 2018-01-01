@@ -1,34 +1,23 @@
-defaultTasks 'build', 'shadowJar'
+plugins {
+    id 'java'
+    id 'org.spongepowered.plugin' version '0.8.1'
+    id 'com.github.johnrengelman.shadow' version '2.0.2'
+}
 
-apply plugin: 'java'
-apply plugin: 'com.github.johnrengelman.shadow'
+defaultTasks 'build', 'shadowJar'
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
-version = '0.3-SNAPSHOT'
-
-buildscript {
-    repositories {
-        mavenCentral()
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.1'
-    }
-}
+version = '0.4'
 
 repositories {
     mavenLocal()
-    mavenCentral()
-    maven {
-        name 'Sponge maven repo'
-        url 'http://repo.spongepowered.org/maven'
-    }
+    jcenter()
 }
 
 dependencies {
-    compile 'org.spongepowered:spongeapi:5.0.0-SNAPSHOT'
+    compile 'org.spongepowered:spongeapi:7.0.0'
     compile 'junit:junit:4.12'
 }
 

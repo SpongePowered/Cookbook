@@ -40,7 +40,6 @@ import org.spongepowered.api.entity.projectile.{Projectile, Snowball}
 import org.spongepowered.api.entity.EntityTypes
 import org.spongepowered.api.event.{Listener, Order}
 import org.spongepowered.api.event.block.InteractBlockEvent
-import org.spongepowered.api.event.cause.{Cause, NamedCause}
 import org.spongepowered.api.event.game.state.GameStartingServerEvent
 import org.spongepowered.api.event.filter.cause.First
 import org.spongepowered.api.item.ItemTypes
@@ -150,7 +149,9 @@ class ScalaFireball {
       case fireball: Snowball =>
         fireball.setShooter(player)
         fireball.offer(Keys.ATTACK_DAMAGE, Double.box(4D))
-        world.spawnEntity(fireball, Cause.of(NamedCause.owner(player)))
+        Sponge.getCauseStackManager.pushCause(player)
+        world.spawnEntity(fireball)
+        Sponge.getCauseStackManager.popCause()
         fireball.offer(Keys.FIRE_TICKS, Int.box(100000))
       case _ =>
     }
@@ -167,7 +168,9 @@ class ScalaFireball {
         fireball.setShooter(player)
         fireball.offer(Keys.EXPLOSION_RADIUS, Optional.of(Int.box(3)))
         fireball.offer(Keys.ATTACK_DAMAGE, Double.box(8))
-        world.spawnEntity(fireball, Cause.of(NamedCause.owner(player)))
+        Sponge.getCauseStackManager.pushCause(player)
+        world.spawnEntity(fireball)
+        Sponge.getCauseStackManager.popCause()
         fireballMap.put(fireball, velocity)
       case _ =>
     }

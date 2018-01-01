@@ -38,8 +38,6 @@ import org.spongepowered.api.entity.projectile.explosive.fireball.LargeFireball;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.InteractBlockEvent;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.game.state.GameStartingServerEvent;
 import org.spongepowered.api.item.ItemType;
@@ -55,9 +53,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.WeakHashMap;
 
-@Plugin(id = "com.afterkraft.SimpleFireball",
+@Plugin(id = "simplefireball",
         name = "SimpleFireball",
-        version = "1.1")
+        version = "1.2")
 public class SimpleFireball {
 
     private final WeakHashMap<Projectile, Vector3d> fireballMap = new
@@ -120,7 +118,9 @@ public class SimpleFireball {
         fireball.offer(Keys.VELOCITY, velocity);
         fireball.setShooter(player);
         fireball.offer(Keys.ATTACK_DAMAGE, 4D);
-        world.spawnEntity(fireball, Cause.of(NamedCause.source(player)));
+        Sponge.getCauseStackManager().pushCause(player);
+        world.spawnEntity(fireball);
+        Sponge.getCauseStackManager().popCause();
         fireball.offer(Keys.FIRE_TICKS, 100000);
     }
 
@@ -134,7 +134,9 @@ public class SimpleFireball {
         fireball.setShooter(player);
         fireball.offer(Keys.EXPLOSION_RADIUS, Optional.of(3));
         fireball.offer(Keys.ATTACK_DAMAGE, 8D);
-        world.spawnEntity(fireball, Cause.of(NamedCause.owner(player)));
+        Sponge.getCauseStackManager().pushCause(player);
+        world.spawnEntity(fireball);
+        Sponge.getCauseStackManager().popCause();
         this.fireballMap.put(fireball, velocity);
     }
 

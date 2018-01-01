@@ -31,13 +31,13 @@ public class BlockWorkerTest {
         for (int x = min.getX(); x <= max.getX(); x++) {
             for (int y = min.getY(); y <= max.getY(); y++) {
                 for (int z = min.getZ(); z <= max.getZ(); z++) {
-                    reference.setBlock(x, y, z, BlockBufferTest.getRandomBlock(), null);
+                    reference.setBlock(x, y, z, BlockBufferTest.getRandomBlock());
                 }
             }
         }
         // Use the fill function to copy the reference
-        final MutableBlockVolumeWorker<? extends MutableBlockVolume> worker = volume.getBlockWorker(null);
-        worker.fill(reference::getBlock, null);
+        final MutableBlockVolumeWorker<? extends MutableBlockVolume> worker = volume.getBlockWorker();
+        worker.fill(reference::getBlock);
         // Check if volume and reference are the same
         for (int x = min.getX(); x <= max.getX(); x++) {
             for (int y = min.getY(); y <= max.getY(); y++) {
@@ -56,8 +56,8 @@ public class BlockWorkerTest {
         final Vector3i max = volume.getBlockMax();
         // Fill the reference with either air or a random block
         final MutableBlockVolume reference = TestSuite.EXTENT_BUFFER_FACTORY.createBlockBuffer(20, 10, 15);
-        final MutableBlockVolumeWorker<? extends MutableBlockVolume> worker = reference.getBlockWorker(null);
-        worker.fill((x, y, z) -> RANDOM.nextBoolean() ? AIR : BlockBufferTest.getRandomBlock(), null);
+        final MutableBlockVolumeWorker<? extends MutableBlockVolume> worker = reference.getBlockWorker();
+        worker.fill((x, y, z) -> RANDOM.nextBoolean() ? AIR : BlockBufferTest.getRandomBlock());
         // Map air to a random block and anything else to air into a new volume
         worker.map(((v, x, y, z) -> v.getBlock(x, y, z).equals(AIR) ? BlockBufferTest.getRandomBlock() : AIR), volume);
         // Check if volume and reference follow the mapping rule
@@ -81,12 +81,12 @@ public class BlockWorkerTest {
         final Vector3i max = volume.getBlockMax();
         // Fill two references with either air or a random block (also test with different sized volumes)
         final MutableBlockVolume reference1 = TestSuite.EXTENT_BUFFER_FACTORY.createBlockBuffer(20, 10, 15);
-        final MutableBlockVolumeWorker<? extends MutableBlockVolume> worker1 = reference1.getBlockWorker(null);
-        worker1.fill((x, y, z) -> RANDOM.nextBoolean() ? AIR : BlockBufferTest.getRandomBlock(), null);
+        final MutableBlockVolumeWorker<? extends MutableBlockVolume> worker1 = reference1.getBlockWorker();
+        worker1.fill((x, y, z) -> RANDOM.nextBoolean() ? AIR : BlockBufferTest.getRandomBlock());
         final MutableBlockVolume reference2 = TestSuite.EXTENT_BUFFER_FACTORY.createBlockBuffer(22, 16, 18);
         final MutableBlockVolume shiftedReference2 = reference2.getBlockView(DiscreteTransform3.fromTranslation(-42, 16, 71));
-        final MutableBlockVolumeWorker<? extends MutableBlockVolume> worker2 = reference1.getBlockWorker(null);
-        worker2.fill((x, y, z) -> RANDOM.nextBoolean() ? AIR : BlockBufferTest.getRandomBlock(), null);
+        final MutableBlockVolumeWorker<? extends MutableBlockVolume> worker2 = reference1.getBlockWorker();
+        worker2.fill((x, y, z) -> RANDOM.nextBoolean() ? AIR : BlockBufferTest.getRandomBlock());
         // Merge by using the non-air if one of the two blocks isn't air or using the first for any other case
         worker1.merge(shiftedReference2, (firstVolume, xFirst, yFirst, zFirst, secondVolume, xSecond, ySecond, zSecond) -> {
                 final BlockState firstBlock = firstVolume.getBlock(xFirst, yFirst, zFirst);
@@ -132,12 +132,12 @@ public class BlockWorkerTest {
                     } else {
                         block = BlockBufferTest.getRandomBlock();
                     }
-                    volume.setBlock(x, y, z, block, null);
+                    volume.setBlock(x, y, z, block);
                 }
             }
         }
         // Reduce by hashing the coordinates of air blocks
-        final MutableBlockVolumeWorker<? extends MutableBlockVolume> worker = volume.getBlockWorker(null);
+        final MutableBlockVolumeWorker<? extends MutableBlockVolume> worker = volume.getBlockWorker();
         final int reduction = worker.reduce((v, x, y, z, r) -> r + (v.getBlock(x, y, z).equals(AIR) ? x | y | z : 0), (a, b) -> a + b, 0);
         Assert.assertEquals(airHash, reduction);
     }
@@ -159,12 +159,12 @@ public class BlockWorkerTest {
                     } else {
                         block = BlockBufferTest.getRandomBlock();
                     }
-                    volume.setBlock(x, y, z, block, null);
+                    volume.setBlock(x, y, z, block);
                 }
             }
         }
         // Iterate and add the coordinates of air blocks
-        final MutableBlockVolumeWorker<? extends MutableBlockVolume> worker = volume.getBlockWorker(null);
+        final MutableBlockVolumeWorker<? extends MutableBlockVolume> worker = volume.getBlockWorker();
         final Set<Vector3i> coordinates = new HashSet<>();
         worker.iterate((v, x, y, z) -> {
             if (v.getBlock(x, y, z).equals(AIR)) {

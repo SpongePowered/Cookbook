@@ -41,10 +41,10 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 
-@Plugin(id = ConfigDatabase.NAME, name = "ConfigDatabase", version = "0.2")
+@Plugin(id = ConfigDatabase.NAME, name = "ConfigDatabase", version = "0.4")
 public class ConfigDatabase {
 
-    public static final String NAME = "ConfigDatabase";
+    public static final String NAME = "configdatabase";
     private ConfigurationNode config = null;
     @Inject
     private PluginContainer pluginContainer;

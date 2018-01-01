@@ -1,8 +1,32 @@
+/*
+ * This file is part of Sponge, licensed under the MIT License (MIT).
+ *
+ * Copyright (c) SpongePowered <https://www.spongepowered.org>
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 package org.spongepowered.cookbook.myhomes.data.home.impl;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import org.spongepowered.cookbook.myhomes.data.Keys;
+import org.spongepowered.cookbook.myhomes.MyHomes;
 import org.spongepowered.cookbook.myhomes.data.home.Home;
 import org.spongepowered.cookbook.myhomes.data.home.HomeData;
 import org.spongepowered.cookbook.myhomes.data.home.ImmutableHomeData;
@@ -32,11 +56,11 @@ public class ImmutableHomeDataImpl extends AbstractImmutableData<ImmutableHomeDa
         this.homes = ImmutableMap.copyOf(checkNotNull(homes));
 
         this.defaultHomeValue = Sponge.getRegistry().getValueFactory()
-                .createValue(Keys.DEFAULT_HOME, defaultHome)
+                .createValue(MyHomes.DEFAULT_HOME, defaultHome)
                 .asImmutable();
 
         this.homesValue = Sponge.getRegistry().getValueFactory()
-                .createMapValue(Keys.HOMES, homes, ImmutableMap.of())
+                .createMapValue(MyHomes.HOMES, homes, ImmutableMap.of())
                 .asImmutable();
     }
 
@@ -62,11 +86,11 @@ public class ImmutableHomeDataImpl extends AbstractImmutableData<ImmutableHomeDa
 
     @Override
     protected void registerGetters() {
-        registerKeyValue(Keys.DEFAULT_HOME, this::defaultHome);
-        registerKeyValue(Keys.HOMES, this::homes);
+        registerKeyValue(MyHomes.DEFAULT_HOME, this::defaultHome);
+        registerKeyValue(MyHomes.HOMES, this::homes);
 
-        registerFieldGetter(Keys.DEFAULT_HOME, this::getDefaultHome);
-        registerFieldGetter(Keys.HOMES, this::getHomes);
+        registerFieldGetter(MyHomes.DEFAULT_HOME, this::getDefaultHome);
+        registerFieldGetter(MyHomes.HOMES, this::getHomes);
     }
 
     @Override
@@ -85,9 +109,9 @@ public class ImmutableHomeDataImpl extends AbstractImmutableData<ImmutableHomeDa
         DataContainer container = super.toContainer();
         // This is the simplest, but use whatever structure you want!
         if(this.defaultHome != null) {
-            container.set(Keys.DEFAULT_HOME, this.defaultHome);
+            container.set(MyHomes.DEFAULT_HOME, this.defaultHome);
         }
-        container.set(Keys.HOMES, this.homes);
+        container.set(MyHomes.HOMES, this.homes);
 
         return container;
     }

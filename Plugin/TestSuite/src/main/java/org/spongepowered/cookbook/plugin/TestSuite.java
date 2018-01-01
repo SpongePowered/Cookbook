@@ -26,7 +26,7 @@ import java.util.Optional;
 
 import javax.annotation.Nullable;
 
-@Plugin(id = "sponge_test_suite", name = "TestSuite", version = "0.3", description = "Runtime test suite for sponge implementations")
+@Plugin(id = "sponge_test_suite", name = "TestSuite", version = "0.4", description = "Runtime test suite for sponge implementations")
 public class TestSuite {
 
     public static ExtentBufferFactory EXTENT_BUFFER_FACTORY;

@@ -1,6 +1,30 @@
+/*
+ * This file is part of Sponge, licensed under the MIT License (MIT).
+ *
+ * Copyright (c) SpongePowered <https://www.spongepowered.org>
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 package org.spongepowered.cookbook.myhomes.data.home.impl;
 
-import org.spongepowered.cookbook.myhomes.data.Keys;
+import org.spongepowered.cookbook.myhomes.MyHomes;
 import org.spongepowered.cookbook.myhomes.data.home.Home;
 import org.spongepowered.cookbook.myhomes.data.home.HomeData;
 import org.spongepowered.cookbook.myhomes.data.home.ImmutableHomeData;
@@ -41,14 +65,14 @@ public class HomeDataImpl extends AbstractData<HomeData, ImmutableHomeData> impl
     @Override
     public Value<Home> defaultHome() {
         return Sponge.getRegistry().getValueFactory()
-                .createValue(Keys.DEFAULT_HOME, defaultHome, null);
+                .createValue(MyHomes.DEFAULT_HOME, this.defaultHome, null);
     }
 
     // Override if you have a separate interface
     @Override
     public MapValue<String, Home> homes() {
         return Sponge.getRegistry().getValueFactory()
-                .createMapValue(Keys.HOMES, homes, ImmutableMap.of());
+                .createMapValue(MyHomes.HOMES, this.homes, ImmutableMap.of());
     }
 
     private Home getDefaultHome() {
@@ -70,14 +94,14 @@ public class HomeDataImpl extends AbstractData<HomeData, ImmutableHomeData> impl
 
     @Override
     protected void registerGettersAndSetters() {
-        registerKeyValue(Keys.DEFAULT_HOME, this::defaultHome);
-        registerKeyValue(Keys.HOMES, this::homes);
+        registerKeyValue(MyHomes.DEFAULT_HOME, this::defaultHome);
+        registerKeyValue(MyHomes.HOMES, this::homes);
 
-        registerFieldGetter(Keys.DEFAULT_HOME, this::getDefaultHome);
-        registerFieldGetter(Keys.HOMES, this::getHomes);
+        registerFieldGetter(MyHomes.DEFAULT_HOME, this::getDefaultHome);
+        registerFieldGetter(MyHomes.HOMES, this::getHomes);
 
-        registerFieldSetter(Keys.DEFAULT_HOME, this::setDefaultHome);
-        registerFieldSetter(Keys.HOMES, this::setHomes);
+        registerFieldSetter(MyHomes.DEFAULT_HOME, this::setDefaultHome);
+        registerFieldSetter(MyHomes.HOMES, this::setHomes);
     }
 
     @Override
@@ -104,15 +128,15 @@ public class HomeDataImpl extends AbstractData<HomeData, ImmutableHomeData> impl
     // Only required on mutable implementations
     @Override
     public Optional<HomeData> from(DataContainer container) {
-        if (!container.contains(Keys.DEFAULT_HOME, Keys.HOMES)) {
+        if (!container.contains(MyHomes.DEFAULT_HOME, MyHomes.HOMES)) {
             return Optional.empty();
         }
         // Loads the structure defined in toContainer
-        this.defaultHome = container.getSerializable(Keys.DEFAULT_HOME.getQuery(), Home.class).get();
+        this.defaultHome = container.getSerializable(MyHomes.DEFAULT_HOME.getQuery(), Home.class).get();
 
         // Loads the map of homes
         this.homes = Maps.newHashMap();
-        DataView homes = container.getView(Keys.HOMES.getQuery()).get();
+        DataView homes = container.getView(MyHomes.HOMES.getQuery()).get();
         for (DataQuery homeQuery : homes.getKeys(false)) {
             homes.getSerializable(homeQuery, Home.class)
                     .ifPresent(home -> this.homes.put(homeQuery.toString(), home));
@@ -131,9 +155,9 @@ public class HomeDataImpl extends AbstractData<HomeData, ImmutableHomeData> impl
         DataContainer container = super.toContainer();
         // This is the simplest, but use whatever structure you want!
         if(this.defaultHome != null) {
-            container.set(Keys.DEFAULT_HOME, this.defaultHome);
+            container.set(MyHomes.DEFAULT_HOME, this.defaultHome);
         }
-        container.set(Keys.HOMES, this.homes);
+        container.set(MyHomes.HOMES, this.homes);
 
         return container;
     }

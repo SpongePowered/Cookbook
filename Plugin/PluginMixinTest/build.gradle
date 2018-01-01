@@ -11,26 +11,27 @@ buildscript {
     }
 
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
-        classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath 'org.spongepowered:mixingradle:0.5-SNAPSHOT'
     }
 }
 
 plugins {
-    id 'org.spongepowered.plugin' version '0.7'
-    id 'net.minecrell.vanillagradle.server' version '2.2-3'
+    id 'java'
+    id 'org.spongepowered.plugin' version '0.8.1'
+    id 'net.minecrell.vanillagradle.server' version '2.2-6'
 }
 
 apply plugin: 'org.spongepowered.mixin'
 
 dependencies {
-    compile 'org.spongepowered:spongeapi:6.0.0'
+    compile 'org.spongepowered:spongeapi:7.0.0'
     compile 'org.spongepowered:mixin:0.7.5-SNAPSHOT'
 }
 
 minecraft {
-    version = '1.10.2'
-    mappings = 'snapshot_20171027'
+    version = '1.12.2'
+    mappings = 'snapshot_20180101'
     makeObfSourceJar = false
 }
 

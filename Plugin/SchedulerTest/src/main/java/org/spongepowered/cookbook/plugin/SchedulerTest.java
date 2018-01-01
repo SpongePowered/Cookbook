@@ -11,13 +11,12 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-@Plugin(id = "SchedulerTest", name = "Test Plugin", version = "1.1")
+@Plugin(id = "schedulertest", name = "Test Plugin", version = "1.2")
 public class SchedulerTest {
 
     private final int MAX_TASKS = 15;
 
     private RunnableTaskBody watchDog = new RunnableTaskBody("WatchDog", 250, RunnableTaskBody.TimeBase.TICK);
-
 
     @Listener
     public void handler(GameStartedServerEvent evt) {

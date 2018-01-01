@@ -1,17 +1,17 @@
-apply plugin: 'java'
+plugins {
+    id 'java'
+    id 'org.spongepowered.plugin' version '0.8.1'
+}
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
-version = '0.3'
+version = '0.4'
 
 repositories {
-    mavenCentral()
-    maven {
-        url 'http://repo.spongepowered.org/maven'
-    }
+    jcenter()
 }
 
 dependencies {
-    compile "org.spongepowered:spongeapi:6.+"
+    compile "org.spongepowered:spongeapi:7.0.0"
 }

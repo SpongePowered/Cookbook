@@ -5,5 +5,5 @@ organization := "org.spongepowered.cookbook.plugin"
 scalaVersion := "2.12.4"
 
 resolvers += "SpongePowered" at "http://repo.spongepowered.org/maven"
-libraryDependencies += "org.spongepowered" % "spongeapi" % "6.0.0"
+libraryDependencies += "org.spongepowered" % "spongeapi" % "7.0.0"
 

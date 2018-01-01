@@ -23,7 +23,7 @@ import org.spongepowered.api.text.format.TextStyles;
 import java.util.List;
 import java.util.Random;
 
-@Plugin(id = "flardians", name = "Flardians", version = "0.3")
+@Plugin(id = "flardians", name = "Flardians", version = "0.5")
 public class Flardians {
 
     public static final ItemType[] SELL_TYPES = new ItemType[]{ItemTypes.SLIME_BALL, ItemTypes.HARDENED_CLAY, ItemTypes.BLAZE_ROD, ItemTypes.APPLE,
