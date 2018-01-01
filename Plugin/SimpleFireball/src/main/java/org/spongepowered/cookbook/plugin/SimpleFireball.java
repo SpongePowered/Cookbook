@@ -29,7 +29,7 @@ import com.flowpowered.math.vector.Vector3d;
 import com.google.inject.Inject;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
-import org.spongepowered.api.entity.Entity;
+import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.projectile.Projectile;
@@ -39,6 +39,7 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.game.state.GameStartingServerEvent;
 import org.spongepowered.api.item.ItemType;
@@ -88,7 +89,10 @@ public class SimpleFireball {
 
     @Listener(order = Order.POST)
     public void onInteract(InteractBlockEvent event, @First Player player) {
-        Optional<ItemStack> option = player.getItemInHand();
+        Optional<ItemStack> option = Optional
+                .ofNullable(player.getItemInHand(HandTypes.MAIN_HAND)
+                        .orElse(player.getItemInHand(HandTypes.OFF_HAND)
+                                .orElse(null)));
 
         if (option.isPresent()) {
             ItemType itemType = option.get().getItem();
@@ -106,39 +110,32 @@ public class SimpleFireball {
 
     private void spawnFireball(Player player) {
         World world = player.getWorld();
-        Optional<Entity> optional = world.createEntity(EntityTypes.SNOWBALL,
+        Snowball fireball = (Snowball)world.createEntity(EntityTypes.SNOWBALL,
                 player.getLocation().getPosition().add(Math.cos((player
                                 .getRotation().getY() - 90) % 360) * 0.2,
                         1.8, Math.sin((player
                                 .getRotation().getY() - 90) % 360) * 0.2));
 
-        if (optional.isPresent()) {
-            Vector3d velocity = getVelocity(player, 1.5D);
-            optional.get().offer(Keys.VELOCITY, velocity);
-            Snowball fireball = (Snowball) optional.get();
-            fireball.setShooter(player);
-            fireball.offer(Keys.ATTACK_DAMAGE, 4D);
-            world.spawnEntity(fireball, Cause.of(player));
-            fireball.offer(Keys.FIRE_TICKS, 100000);
-        }
+        Vector3d velocity = getVelocity(player, 1.5D);
+        fireball.offer(Keys.VELOCITY, velocity);
+        fireball.setShooter(player);
+        fireball.offer(Keys.ATTACK_DAMAGE, 4D);
+        world.spawnEntity(fireball, Cause.of(NamedCause.source(player)));
+        fireball.offer(Keys.FIRE_TICKS, 100000);
     }
 
     private void spawnLargeFireball(Player player) {
         World world = player.getWorld();
-        Optional<Entity> optional = world.createEntity(EntityTypes.FIREBALL,
+        LargeFireball fireball = (LargeFireball)world.createEntity(EntityTypes.FIREBALL,
                 player.getLocation().getPosition().add(0, 1.8, 0));
 
-        if (optional.isPresent()) {
-            Vector3d velocity = getVelocity(player, 1.5D);
-            optional.get().offer(Keys.VELOCITY, velocity);
-            LargeFireball fireball = (LargeFireball) optional.get();
-            fireball.setShooter(player);
-            // TODO This vanished after the Data API was introduced
-            // fireball.setExplosionPower(3);
-            fireball.offer(Keys.ATTACK_DAMAGE, 8D);
-            world.spawnEntity(fireball, Cause.of(player));
-            this.fireballMap.put(fireball, velocity);
-        }
+        Vector3d velocity = getVelocity(player, 1.5D);
+        fireball.offer(Keys.VELOCITY, velocity);
+        fireball.setShooter(player);
+        fireball.offer(Keys.EXPLOSION_RADIUS, Optional.of(3));
+        fireball.offer(Keys.ATTACK_DAMAGE, 8D);
+        world.spawnEntity(fireball, Cause.of(NamedCause.owner(player)));
+        this.fireballMap.put(fireball, velocity);
     }
 
     private class FireballUpdater implements Runnable {

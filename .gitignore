@@ -24,5 +24,6 @@ dependency-reduced-pom.xml
 *.ipr
 *.iws
 .idea/
+out/
 
 #Specific files to the project

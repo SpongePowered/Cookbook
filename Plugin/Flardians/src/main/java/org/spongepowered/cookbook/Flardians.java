@@ -52,8 +52,8 @@ public class Flardians {
             .forEach(villager -> {
                 villager.offer(Keys.CAREER, Careers.CLERIC);
                 villager.offer(Keys.DISPLAY_NAME, FLARDARIAN);
-                villager.offer(Keys.SHOWS_DISPLAY_NAME, true);
-                villager.offer(Keys.INVULNERABILITY, 10000);
+                villager.offer(Keys.CUSTOM_NAME_VISIBLE, true);
+                villager.offer(Keys.INVULNERABILITY_TICKS, 10000);
                 villager.offer(generateTradeOffer());
             });
     }

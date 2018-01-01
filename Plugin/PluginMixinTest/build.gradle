@@ -12,7 +12,7 @@ buildscript {
 
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
-        classpath 'org.spongepowered:mixingradle:0.4-SNAPSHOT'
+        classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
     }
 }
 
@@ -24,21 +24,18 @@ plugins {
 apply plugin: 'org.spongepowered.mixin'
 
 dependencies {
-    compile 'org.spongepowered:spongeapi:5.0.0'
-    compile 'org.spongepowered:mixin:0.5.17-SNAPSHOT'
+    compile 'org.spongepowered:spongeapi:6.0.0'
+    compile 'org.spongepowered:mixin:0.7.5-SNAPSHOT'
 }
 
 minecraft {
     version = '1.10.2'
-    mappings = 'snapshot_20161027'
+    mappings = 'snapshot_20171027'
     makeObfSourceJar = false
 }
 
-// Mixins
-sourceSets {
-    main {
-        refMap = "mixins.pluginmixintest.refmap.json"
-    }
+mixin {
+    add sourceSets.main, "mixins.pluginmixintest.refmap.json"
 }
 
 jar {

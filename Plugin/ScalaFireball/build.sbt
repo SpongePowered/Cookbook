@@ -1,19 +1,9 @@
-import sbt.Keys._
-
 name := "ScalaFireball"
-
-version := "1.1"
-
-name := "ScalaFireball"
-
+version := "1.2"
 organization := "org.spongepowered.cookbook.plugin"
 
-scalaVersion := "2.11.1"
-
-libraryDependencies += "org.spongepowered" % "spongeapi" % "3.0.0"
+scalaVersion := "2.12.4"
 
 resolvers += "SpongePowered" at "http://repo.spongepowered.org/maven"
-
-lazy val scalaFireball = Project( "ScalaFireball", file("."))
-
+libraryDependencies += "org.spongepowered" % "spongeapi" % "6.0.0"
 
