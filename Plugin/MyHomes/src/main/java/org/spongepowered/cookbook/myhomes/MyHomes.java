@@ -72,24 +72,21 @@ public class MyHomes {
     private DataRegistration<HomeData, ImmutableHomeData> HOME_DATA_REGISTRATION;
 
     @Listener
-    public void onKeyRegistration(GameRegistryEvent.Register<Key<?>> evnet) {
+    public void onKeyRegistration(GameRegistryEvent.Register<Key<?>> event) {
         DEFAULT_HOME = Key.builder()
-                .type(new TypeToken<Value<Home>>() {
-                })
+                .type(new TypeToken<Value<Home>>() {})
                 .id("myhomes:default_home")
                 .name("Default Home")
                 .query(DataQuery.of("DefaultHome"))
                 .build();
         HOMES = Key.builder()
-                .type(new TypeToken<MapValue<String, Home>>() {
-                })
+                .type(new TypeToken<MapValue<String, Home>>() {})
                 .id("myhomes:homes")
                 .name("Homes")
                 .query(DataQuery.of("Homes"))
                 .build();
         FRIENDS = Key.builder()
-                .type(new TypeToken<ListValue<UUID>>() {
-                })
+                .type(new TypeToken<ListValue<UUID>>() {})
                 .id("myhomes:friends")
                 .name("Friends")
                 .query(DataQuery.of("Friends"))
