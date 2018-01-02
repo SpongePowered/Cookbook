@@ -55,8 +55,6 @@ import java.util.Optional;
 public class Smite {
 
     private static final int MAX_DISTANCE = 100;
-    @Inject
-    private PluginContainer container;
 
     @Listener(order = Order.POST)
     public void onInteract(InteractBlockEvent.Primary event, @First Player player) {

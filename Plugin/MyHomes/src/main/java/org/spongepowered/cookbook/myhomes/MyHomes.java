@@ -59,37 +59,41 @@ import org.spongepowered.cookbook.myhomes.data.home.impl.ImmutableHomeDataImpl;
 
 import java.util.UUID;
 
-@Plugin(id = "myhomes", name = "MyHomes")
+@Plugin(id = "myhomes", name = "MyHomes", version = "1.2", description = "An example of the data API.")
 public class MyHomes {
 
     public static Key<Value<Home>> DEFAULT_HOME = DummyObjectProvider.createExtendedFor(Key.class, "DEFAULT_HOME");
     public static Key<MapValue<String, Home>> HOMES = DummyObjectProvider.createExtendedFor(Key.class, "HOMES");
     public static Key<ListValue<UUID>> FRIENDS = DummyObjectProvider.createExtendedFor(Key.class, "FRIENDS");
 
-    @Inject private PluginContainer container;
+    @Inject
+    private PluginContainer container;
     private DataRegistration<FriendsData, ImmutableFriendsData> FRIENDS_DATA_REGISTRATION;
     private DataRegistration<HomeData, ImmutableHomeData> HOME_DATA_REGISTRATION;
 
     @Listener
     public void onKeyRegistration(GameRegistryEvent.Register<Key<?>> evnet) {
         DEFAULT_HOME = Key.builder()
-            .type(new TypeToken<Value<Home>>() {})
-            .id("myhomes:default_home")
-            .name("Default Home")
-            .query(DataQuery.of("DefaultHome"))
-            .build();
+                .type(new TypeToken<Value<Home>>() {
+                })
+                .id("myhomes:default_home")
+                .name("Default Home")
+                .query(DataQuery.of("DefaultHome"))
+                .build();
         HOMES = Key.builder()
-            .type(new TypeToken<MapValue<String, Home>>() {})
-            .id("myhomes:homes")
-            .name("Homes")
-            .query(DataQuery.of("Homes"))
-            .build();
+                .type(new TypeToken<MapValue<String, Home>>() {
+                })
+                .id("myhomes:homes")
+                .name("Homes")
+                .query(DataQuery.of("Homes"))
+                .build();
         FRIENDS = Key.builder()
-            .type(new TypeToken<ListValue<UUID>>() {})
-            .id("myhomes:friends")
-            .name("Friends")
-            .query(DataQuery.of("Friends"))
-            .build();
+                .type(new TypeToken<ListValue<UUID>>() {
+                })
+                .id("myhomes:friends")
+                .name("Friends")
+                .query(DataQuery.of("Friends"))
+                .build();
     }
 
     @Listener
@@ -106,23 +110,23 @@ public class MyHomes {
         dataManager.registerContentUpdater(HomeData.class, new HomeDataBuilder.HomesUpdater());
 
         this.HOME_DATA_REGISTRATION = DataRegistration.builder()
-            .dataClass(HomeData.class)
-            .immutableClass(ImmutableHomeData.class)
-            .dataImplementation(HomeDataImpl.class)
-            .immutableImplementation(ImmutableHomeDataImpl.class)
-            .dataName("Home Data")
-            .manipulatorId("myhomes:home")
-            .buildAndRegister(this.container);
+                .dataClass(HomeData.class)
+                .immutableClass(ImmutableHomeData.class)
+                .dataImplementation(HomeDataImpl.class)
+                .immutableImplementation(ImmutableHomeDataImpl.class)
+                .dataName("Home Data")
+                .manipulatorId("myhomes:home")
+                .buildAndRegister(this.container);
 
         // Friends stuff
         this.FRIENDS_DATA_REGISTRATION = DataRegistration.builder()
-            .dataClass(FriendsData.class)
-            .immutableClass(ImmutableFriendsData.class)
-            .dataImplementation(FriendsDataImpl.class)
-            .immutableImplementation(ImmutableFriendsDataImpl.class)
-            .dataName("Friends Data")
-            .manipulatorId("myhomes:friends")
-            .buildAndRegister(this.container);
+                .dataClass(FriendsData.class)
+                .immutableClass(ImmutableFriendsData.class)
+                .dataImplementation(FriendsDataImpl.class)
+                .immutableImplementation(ImmutableFriendsDataImpl.class)
+                .dataName("Friends Data")
+                .manipulatorId("myhomes:friends")
+                .buildAndRegister(this.container);
     }
 
     @Listener

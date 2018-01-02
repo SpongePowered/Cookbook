@@ -24,6 +24,11 @@ plugins {
 
 apply plugin: 'org.spongepowered.mixin'
 
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+version = '0.3'
+
 dependencies {
     compile 'org.spongepowered:spongeapi:7.0.0'
     compile 'org.spongepowered:mixin:0.7.5-SNAPSHOT'
@@ -41,9 +46,9 @@ mixin {
 
 jar {
     manifest.attributes(
-        'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
-        'MixinConfigs': 'mixins.pluginmixintest.json',
-        'FMLCorePluginContainsFMLMod': 'true',
+            'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
+            'MixinConfigs': 'mixins.pluginmixintest.json',
+            'FMLCorePluginContainsFMLMod': 'true',
     )
 }
 

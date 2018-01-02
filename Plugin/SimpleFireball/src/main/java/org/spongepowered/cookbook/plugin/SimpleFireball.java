@@ -55,7 +55,8 @@ import java.util.WeakHashMap;
 
 @Plugin(id = "simplefireball",
         name = "SimpleFireball",
-        version = "1.2")
+        version = "1.2",
+        description = "A simple plugin showcasing the creation of fireballs.")
 public class SimpleFireball {
 
     private final WeakHashMap<Projectile, Vector3d> fireballMap = new
@@ -108,7 +109,7 @@ public class SimpleFireball {
 
     private void spawnFireball(Player player) {
         World world = player.getWorld();
-        Snowball fireball = (Snowball)world.createEntity(EntityTypes.SNOWBALL,
+        Snowball fireball = (Snowball) world.createEntity(EntityTypes.SNOWBALL,
                 player.getLocation().getPosition().add(Math.cos((player
                                 .getRotation().getY() - 90) % 360) * 0.2,
                         1.8, Math.sin((player
@@ -126,7 +127,7 @@ public class SimpleFireball {
 
     private void spawnLargeFireball(Player player) {
         World world = player.getWorld();
-        LargeFireball fireball = (LargeFireball)world.createEntity(EntityTypes.FIREBALL,
+        LargeFireball fireball = (LargeFireball) world.createEntity(EntityTypes.FIREBALL,
                 player.getLocation().getPosition().add(0, 1.8, 0));
 
         Vector3d velocity = getVelocity(player, 1.5D);

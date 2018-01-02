@@ -24,7 +24,6 @@
  */
 package org.spongepowered.cookbook.myhomes.data.home.impl;
 
-import org.spongepowered.cookbook.myhomes.data.home.Home;
 import com.flowpowered.math.vector.Vector3d;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataView;
@@ -34,6 +33,7 @@ import org.spongepowered.api.data.persistence.InvalidDataException;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
+import org.spongepowered.cookbook.myhomes.data.home.Home;
 
 import java.util.Optional;
 import java.util.UUID;

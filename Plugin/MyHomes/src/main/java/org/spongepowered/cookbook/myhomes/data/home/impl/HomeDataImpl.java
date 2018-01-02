@@ -24,10 +24,6 @@
  */
 package org.spongepowered.cookbook.myhomes.data.home.impl;
 
-import org.spongepowered.cookbook.myhomes.MyHomes;
-import org.spongepowered.cookbook.myhomes.data.home.Home;
-import org.spongepowered.cookbook.myhomes.data.home.HomeData;
-import org.spongepowered.cookbook.myhomes.data.home.ImmutableHomeData;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
@@ -40,11 +36,14 @@ import org.spongepowered.api.data.manipulator.mutable.common.AbstractData;
 import org.spongepowered.api.data.merge.MergeFunction;
 import org.spongepowered.api.data.value.mutable.MapValue;
 import org.spongepowered.api.data.value.mutable.Value;
-
-import java.util.Map;
-import java.util.Optional;
+import org.spongepowered.cookbook.myhomes.MyHomes;
+import org.spongepowered.cookbook.myhomes.data.home.Home;
+import org.spongepowered.cookbook.myhomes.data.home.HomeData;
+import org.spongepowered.cookbook.myhomes.data.home.ImmutableHomeData;
 
 import javax.annotation.Nullable;
+import java.util.Map;
+import java.util.Optional;
 
 public class HomeDataImpl extends AbstractData<HomeData, ImmutableHomeData> implements HomeData {
 
@@ -154,7 +153,7 @@ public class HomeDataImpl extends AbstractData<HomeData, ImmutableHomeData> impl
     public DataContainer toContainer() {
         DataContainer container = super.toContainer();
         // This is the simplest, but use whatever structure you want!
-        if(this.defaultHome != null) {
+        if (this.defaultHome != null) {
             container.set(MyHomes.DEFAULT_HOME, this.defaultHome);
         }
         container.set(MyHomes.HOMES, this.homes);

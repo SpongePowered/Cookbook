@@ -19,16 +19,16 @@ public class BlockBufferTest {
 
     private static final Random RANDOM = new Random();
     private static final BlockState[] TEST_BLOCKS = {
-        BlockTypes.STONE.getDefaultState(),
-        BlockTypes.DIRT.getDefaultState(),
-        BlockTypes.GRASS.getDefaultState(),
-        BlockTypes.LOG.getDefaultState(),
-        BlockTypes.WOOL.getDefaultState(),
-        BlockTypes.COBBLESTONE.getDefaultState(),
-        BlockTypes.COAL_ORE.getDefaultState(),
-        BlockTypes.IRON_ORE.getDefaultState(),
-        BlockTypes.GOLD_ORE.getDefaultState(),
-        BlockTypes.DIAMOND_ORE.getDefaultState()
+            BlockTypes.STONE.getDefaultState(),
+            BlockTypes.DIRT.getDefaultState(),
+            BlockTypes.GRASS.getDefaultState(),
+            BlockTypes.LOG.getDefaultState(),
+            BlockTypes.WOOL.getDefaultState(),
+            BlockTypes.COBBLESTONE.getDefaultState(),
+            BlockTypes.COAL_ORE.getDefaultState(),
+            BlockTypes.IRON_ORE.getDefaultState(),
+            BlockTypes.GOLD_ORE.getDefaultState(),
+            BlockTypes.DIAMOND_ORE.getDefaultState()
     };
 
     @Test

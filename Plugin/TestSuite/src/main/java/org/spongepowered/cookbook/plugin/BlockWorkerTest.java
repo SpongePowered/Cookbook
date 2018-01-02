@@ -89,14 +89,14 @@ public class BlockWorkerTest {
         worker2.fill((x, y, z) -> RANDOM.nextBoolean() ? AIR : BlockBufferTest.getRandomBlock());
         // Merge by using the non-air if one of the two blocks isn't air or using the first for any other case
         worker1.merge(shiftedReference2, (firstVolume, xFirst, yFirst, zFirst, secondVolume, xSecond, ySecond, zSecond) -> {
-                final BlockState firstBlock = firstVolume.getBlock(xFirst, yFirst, zFirst);
-                final BlockState secondBlock = secondVolume.getBlock(xSecond, ySecond, zSecond);
-                if (firstBlock.equals(AIR) && !secondBlock.equals(AIR)) {
-                    return secondBlock;
-                }
-                return firstBlock;
-            },
-            volume);
+                    final BlockState firstBlock = firstVolume.getBlock(xFirst, yFirst, zFirst);
+                    final BlockState secondBlock = secondVolume.getBlock(xSecond, ySecond, zSecond);
+                    if (firstBlock.equals(AIR) && !secondBlock.equals(AIR)) {
+                        return secondBlock;
+                    }
+                    return firstBlock;
+                },
+                volume);
         // Check if volume and references follow the merging rule
         for (int x = min.getX(); x <= max.getX(); x++) {
             for (int y = min.getY(); y <= max.getY(); y++) {

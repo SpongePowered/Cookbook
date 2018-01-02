@@ -1,4 +1,3 @@
-
 plugins {
     id "org.jetbrains.kotlin.jvm" version "1.2.10"
     // Kotlin's stdlib and such need to be shadowed in.

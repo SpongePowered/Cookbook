@@ -41,7 +41,10 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 
-@Plugin(id = ConfigDatabase.NAME, name = "ConfigDatabase", version = "0.4")
+@Plugin(id = ConfigDatabase.NAME,
+        name = "ConfigDatabase",
+        version = "0.4",
+        description = "Shows how to use configurate to create sort of database.")
 public class ConfigDatabase {
 
     public static final String NAME = "configdatabase";

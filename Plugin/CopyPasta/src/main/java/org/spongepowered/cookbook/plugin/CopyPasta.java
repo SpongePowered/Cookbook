@@ -41,14 +41,18 @@ import java.util.UUID;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-@Plugin(id = CopyPasta.PLUGIN_ID)
+@Plugin(id = CopyPasta.PLUGIN_ID, name = "CopyPasta", version = "0.4", description = "An example of the schematic API.")
 public class CopyPasta {
 
     public static final String PLUGIN_ID = "copypasta";
 
-    @Inject private Logger logger;
-    @Inject private PluginContainer plugin;
-    @Inject @ConfigDir(sharedRoot = false) private File config;
+    @Inject
+    private Logger logger;
+    @Inject
+    private PluginContainer plugin;
+    @Inject
+    @ConfigDir(sharedRoot = false)
+    private File config;
 
     private final Map<UUID, PlayerData> player_data = Maps.newHashMap();
     private File schematicsDir;

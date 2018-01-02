@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-@Plugin(id = "schedulertest", name = "Test Plugin", version = "1.2")
+@Plugin(id = "schedulertest", name = "SchedulerTest", version = "1.2", description = "A plugin to showcase the scheduler.")
 public class SchedulerTest {
 
     private final int MAX_TASKS = 15;
@@ -25,7 +25,7 @@ public class SchedulerTest {
         int Low = 20;
         int High = 100;
 
-        List<Task> myTasks = new ArrayList<Task>();
+        final List<Task> myTasks = new ArrayList<>();
 
         // setup the watch dog:
         this.watchDog.setVerbose(false);

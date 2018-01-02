@@ -24,10 +24,6 @@
  */
 package org.spongepowered.cookbook.myhomes.data.home.impl;
 
-import org.spongepowered.cookbook.myhomes.MyHomes;
-import org.spongepowered.cookbook.myhomes.data.home.Home;
-import org.spongepowered.cookbook.myhomes.data.home.HomeData;
-import org.spongepowered.cookbook.myhomes.data.home.ImmutableHomeData;
 import com.google.common.collect.ImmutableMap;
 import org.spongepowered.api.data.DataHolder;
 import org.spongepowered.api.data.DataView;
@@ -35,6 +31,10 @@ import org.spongepowered.api.data.manipulator.DataManipulatorBuilder;
 import org.spongepowered.api.data.persistence.AbstractDataBuilder;
 import org.spongepowered.api.data.persistence.DataContentUpdater;
 import org.spongepowered.api.data.persistence.InvalidDataException;
+import org.spongepowered.cookbook.myhomes.MyHomes;
+import org.spongepowered.cookbook.myhomes.data.home.Home;
+import org.spongepowered.cookbook.myhomes.data.home.HomeData;
+import org.spongepowered.cookbook.myhomes.data.home.ImmutableHomeData;
 
 import java.util.Optional;
 
@@ -58,7 +58,7 @@ public class HomeDataBuilder extends AbstractDataBuilder<HomeData> implements Da
 
     @Override
     protected Optional<HomeData> buildContent(DataView container) throws InvalidDataException {
-        if(!container.contains(MyHomes.HOMES)) return Optional.empty();
+        if (!container.contains(MyHomes.HOMES)) return Optional.empty();
 
         HomeData data = new HomeDataImpl();
 

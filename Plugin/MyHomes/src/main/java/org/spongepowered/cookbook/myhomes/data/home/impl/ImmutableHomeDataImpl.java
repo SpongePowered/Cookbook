@@ -26,16 +26,16 @@ package org.spongepowered.cookbook.myhomes.data.home.impl;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import org.spongepowered.cookbook.myhomes.MyHomes;
-import org.spongepowered.cookbook.myhomes.data.home.Home;
-import org.spongepowered.cookbook.myhomes.data.home.HomeData;
-import org.spongepowered.cookbook.myhomes.data.home.ImmutableHomeData;
 import com.google.common.collect.ImmutableMap;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.manipulator.immutable.common.AbstractImmutableData;
 import org.spongepowered.api.data.value.immutable.ImmutableMapValue;
 import org.spongepowered.api.data.value.immutable.ImmutableValue;
+import org.spongepowered.cookbook.myhomes.MyHomes;
+import org.spongepowered.cookbook.myhomes.data.home.Home;
+import org.spongepowered.cookbook.myhomes.data.home.HomeData;
+import org.spongepowered.cookbook.myhomes.data.home.ImmutableHomeData;
 
 import java.util.Map;
 
@@ -108,7 +108,7 @@ public class ImmutableHomeDataImpl extends AbstractImmutableData<ImmutableHomeDa
     public DataContainer toContainer() {
         DataContainer container = super.toContainer();
         // This is the simplest, but use whatever structure you want!
-        if(this.defaultHome != null) {
+        if (this.defaultHome != null) {
             container.set(MyHomes.DEFAULT_HOME, this.defaultHome);
         }
         container.set(MyHomes.HOMES, this.homes);

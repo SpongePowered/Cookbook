@@ -46,6 +46,7 @@ fun Text.underline(): Text = Text.builder().style(TextStyles.UNDERLINE).append(t
 
 // The operator keyword marks extension functions used as unary or binary operators.
 operator fun Text.plus(other: Text): Text = Text.builder().append(this).append(other).toText()
+
 operator fun Text.plus(other: String): Text = Text.builder().append(this).append(Text.of(other)).toText()
 
 fun <T : ClickAction<*>> Text.click(action: T): Text = Text.builder().append(this).onClick(action).toText()

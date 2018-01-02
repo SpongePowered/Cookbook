@@ -54,7 +54,8 @@ class HelloFromKotlin {
     }
 
     // Listeners are still painless.
-    @Listener fun serverStarting(event: GameAboutToStartServerEvent) {
+    @Listener
+    fun serverStarting(event: GameAboutToStartServerEvent) {
 
         // Note the semicolons! (Oh wait, the compiler knows when you don't
         // need them.)

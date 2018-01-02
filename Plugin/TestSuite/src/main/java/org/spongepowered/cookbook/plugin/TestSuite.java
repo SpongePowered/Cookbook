@@ -21,18 +21,20 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.extent.ExtentBufferFactory;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
-
-import javax.annotation.Nullable;
 
 @Plugin(id = "sponge_test_suite", name = "TestSuite", version = "0.4", description = "Runtime test suite for sponge implementations")
 public class TestSuite {
 
     public static ExtentBufferFactory EXTENT_BUFFER_FACTORY;
-    @Inject private Logger logger;
-    @Inject private PluginContainer instance;
 
+    @Inject
+    private Logger logger;
+
+    @Inject
+    private PluginContainer instance;
 
     @Listener
     public void onServerStarting(GameStartingServerEvent event) {
@@ -41,7 +43,7 @@ public class TestSuite {
         this.logger.info("Running test suite...");
         final Result result = runTests();
         this.logger.info("Ran {} test(s), ignored {} test(s), took {}", result.getRunCount(), result.getIgnoreCount(),
-            DurationFormatUtils.formatDurationWords(result.getRunTime(), true, true));
+                DurationFormatUtils.formatDurationWords(result.getRunTime(), true, true));
         if (result.getFailureCount() > 0) {
             this.logger.warn("Failed {} test(s)", result.getFailureCount());
             for (Failure failure : result.getFailures()) {
@@ -88,11 +90,11 @@ public class TestSuite {
         }
 
         @Override
-        public CommandResult process(CommandSource source, String arguments) throws CommandException {
+        public CommandResult process(CommandSource source, String arguments) {
             source.sendMessage(Text.of("Running test suite..."));
             final Result result = runTests();
             source.sendMessage(Text.of("Ran ", result.getRunCount(), " test(s), ignored ", result.getIgnoreCount(), " test(s), took ",
-                DurationFormatUtils.formatDurationWords(result.getRunTime(), true, true)));
+                    DurationFormatUtils.formatDurationWords(result.getRunTime(), true, true)));
             if (result.getFailureCount() > 0) {
                 source.sendMessage(Text.of(TextColors.DARK_RED, "Failed ", result.getFailureCount(), " test(s)"));
                 source.sendMessage(Text.of(TextColors.DARK_RED, "See console for stack traces"));

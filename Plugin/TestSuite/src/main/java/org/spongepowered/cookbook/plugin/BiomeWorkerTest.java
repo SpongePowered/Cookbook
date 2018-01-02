@@ -84,14 +84,14 @@ public class BiomeWorkerTest {
         worker2.fill((x, y, z) -> RANDOM.nextBoolean() ? BiomeTypes.SKY : BiomeBufferTest.getRandomBiome());
         // Merge by using the non-sky if one of the two biomes isn't sky or using the first for any other case
         worker1.merge(shiftedReference2, (firstVolume, xFirst, yFirst, zFirst, secondVolume, xSecond, ySecond, zSecond) -> {
-                final BiomeType firstBiome = firstVolume.getBiome(xFirst, yFirst, zFirst);
-                final BiomeType secondBiome = secondVolume.getBiome(xSecond, ySecond, zSecond);
-                if (firstBiome.equals(BiomeTypes.SKY) && !secondBiome.equals(BiomeTypes.SKY)) {
-                    return secondBiome;
-                }
-                return firstBiome;
-            },
-            volume);
+                    final BiomeType firstBiome = firstVolume.getBiome(xFirst, yFirst, zFirst);
+                    final BiomeType secondBiome = secondVolume.getBiome(xSecond, ySecond, zSecond);
+                    if (firstBiome.equals(BiomeTypes.SKY) && !secondBiome.equals(BiomeTypes.SKY)) {
+                        return secondBiome;
+                    }
+                    return firstBiome;
+                },
+                volume);
         // Check if volume and references follow the merging rule
         for (int x = min.getX(); x <= max.getX(); x++) {
             for (int z = min.getY(); z <= max.getY(); z++) {

@@ -27,27 +27,29 @@ import org.spongepowered.api.world.WorldArchetypes;
 import org.spongepowered.api.world.gen.WorldGeneratorModifiers;
 import org.spongepowered.api.world.storage.WorldProperties;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.inject.Inject;
-
-@Plugin(id = WorldsTest.PLUGIN_ID)
+@Plugin(id = WorldsTest.PLUGIN_ID, name = "WorldsTest", version = "0.4", description = "A plugin to test various world API.")
 public class WorldsTest {
+
     public static final String PLUGIN_ID = "worldstest";
-    private static final WorldArchetype THE_SKYHELL, THE_SKYEND;
 
-    static {
-        THE_SKYHELL = WorldArchetype.builder().from(WorldArchetypes.THE_NETHER).generatorModifiers(WorldGeneratorModifiers.SKYLANDS)
-                .build("the_skyhell", "The SkyHell");
+    private static final WorldArchetype THE_SKYHELL = WorldArchetype.builder()
+            .from(WorldArchetypes.THE_NETHER)
+            .generatorModifiers(WorldGeneratorModifiers.SKYLANDS)
+            .build("the_skyhell", "The SkyHell");
 
-        THE_SKYEND = WorldArchetype.builder().from(WorldArchetypes.THE_END).generatorModifiers(WorldGeneratorModifiers.SKYLANDS)
-                .build("the_skyend", "The SkyEnd");
-    }
+    private static final WorldArchetype THE_SKYEND = WorldArchetype.builder()
+            .from(WorldArchetypes.THE_END)
+            .generatorModifiers(WorldGeneratorModifiers.SKYLANDS)
+            .build("the_skyend", "The SkyEnd");
 
-    @Inject private Logger logger;
+    @Inject
+    private Logger logger;
 
     @Listener
     public void onGamePreInitialization(GamePreInitializationEvent event) {
@@ -61,7 +63,7 @@ public class WorldsTest {
                             if (!optWorld.isPresent()) {
                                 throw new CommandException(Text.of("World [", Text.of(TextColors.AQUA, optWorldProperties.get().getWorldName()),
                                         "] "
-                                        + "was not found."));
+                                                + "was not found."));
                             }
                             for (Player target : args.<Player>getAll("target")) {
                                 target.setLocation(new Location<>(optWorld.get(), optWorld.get().getProperties()

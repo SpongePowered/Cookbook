@@ -25,28 +25,28 @@
 
 package org.spongepowered.cookbook.plugin
 
-import com.flowpowered.math.vector.Vector3d
-import com.google.inject.Inject
 import java.util.Optional
 
-import scala.collection.mutable
-
+import com.flowpowered.math.vector.Vector3d
+import com.google.inject.Inject
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.data.`type`.HandTypes
 import org.spongepowered.api.data.key.Keys
+import org.spongepowered.api.entity.EntityTypes
 import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.entity.projectile.explosive.fireball.LargeFireball
 import org.spongepowered.api.entity.projectile.{Projectile, Snowball}
-import org.spongepowered.api.entity.EntityTypes
-import org.spongepowered.api.event.{Listener, Order}
 import org.spongepowered.api.event.block.InteractBlockEvent
-import org.spongepowered.api.event.game.state.GameStartingServerEvent
 import org.spongepowered.api.event.filter.cause.First
+import org.spongepowered.api.event.game.state.GameStartingServerEvent
+import org.spongepowered.api.event.{Listener, Order}
 import org.spongepowered.api.item.ItemTypes
 import org.spongepowered.api.plugin.{Plugin, PluginContainer}
-import org.spongepowered.api.text.format.TextColors
 import org.spongepowered.api.text.Text
+import org.spongepowered.api.text.format.TextColors
 import org.spongepowered.api.world.World
+
+import scala.collection.mutable
 
 object ScalaFireball {
   val NoPermission: Text = Text.of(TextColors.RED,
@@ -72,6 +72,7 @@ object ScalaFireball {
   implicit class RichOptional[A](private val optional: Optional[A]) extends AnyVal {
     def asOption: Option[A] = optional.map(Option.apply(_)).orElse(None)
   }
+
 }
 
 @Plugin(id = "ScalaFireballs", name = "ScalaFireballs", version = "1.1")
@@ -83,7 +84,7 @@ class ScalaFireball {
   // Scala has it's own collection library, filled with many collections
   // similar to the ones found in java, in addition to many new ones.
   private val fireballMap: mutable.WeakHashMap[Projectile, Vector3d] =
-    mutable.WeakHashMap.empty[Projectile, Vector3d]
+  mutable.WeakHashMap.empty[Projectile, Vector3d]
 
   // In scala when defining a missing value, a missing value (null, 0, and so on)
   // a underscore can be used instead
@@ -177,10 +178,11 @@ class ScalaFireball {
   }
 
   class FireballUpdater extends Runnable {
-    def run(): Unit =  {
+    def run(): Unit = {
       for ((projectile, speed) <- fireballMap) {
         projectile.offer(Keys.VELOCITY, speed)
       }
     }
   }
+
 }

@@ -19,16 +19,16 @@ public class BiomeBufferTest {
 
     private static final Random RANDOM = new Random();
     private static final BiomeType[] TEST_BIOMES = {
-        BiomeTypes.OCEAN,
-        BiomeTypes.BEACH,
-        BiomeTypes.FOREST,
-        BiomeTypes.PLAINS,
-        BiomeTypes.TAIGA,
-        BiomeTypes.JUNGLE,
-        BiomeTypes.DESERT,
-        BiomeTypes.HELL,
-        BiomeTypes.MESA,
-        BiomeTypes.SWAMPLAND
+            BiomeTypes.OCEAN,
+            BiomeTypes.BEACH,
+            BiomeTypes.FOREST,
+            BiomeTypes.PLAINS,
+            BiomeTypes.TAIGA,
+            BiomeTypes.JUNGLE,
+            BiomeTypes.DESERT,
+            BiomeTypes.HELL,
+            BiomeTypes.MESA,
+            BiomeTypes.SWAMPLAND
     };
 
     @Test

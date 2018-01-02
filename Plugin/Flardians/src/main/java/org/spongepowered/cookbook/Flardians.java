@@ -23,39 +23,39 @@ import org.spongepowered.api.text.format.TextStyles;
 import java.util.List;
 import java.util.Random;
 
-@Plugin(id = "flardians", name = "Flardians", version = "0.5")
+@Plugin(id = "flardians", name = "Flardians", version = "0.5", description = "BUY FLARD HERE")
 public class Flardians {
 
-    public static final ItemType[] SELL_TYPES = new ItemType[]{ItemTypes.SLIME_BALL, ItemTypes.HARDENED_CLAY, ItemTypes.BLAZE_ROD, ItemTypes.APPLE,
-                                                               ItemTypes.GHAST_TEAR, ItemTypes.COBBLESTONE, ItemTypes.STICK, ItemTypes.EMERALD,};
-    public static final List<ItemType> BUYING_TYPES = ImmutableList.of(ItemTypes.ACACIA_DOOR, ItemTypes.LEAVES2, ItemTypes.BOOKSHELF, ItemTypes.COAL,
-                                                                       ItemTypes.COBBLESTONE, ItemTypes.ANVIL, ItemTypes.IRON_ORE, ItemTypes.APPLE,
-                                                                       ItemTypes.WHEAT_SEEDS, ItemTypes.DIRT);
-    public static final Text FLARDARIAN = Text.of(TextColors.DARK_AQUA, TextStyles.BOLD, TextStyles.ITALIC, "Flardarian");
-    public static final Text ITEM_DISPLAY = Text.of(TextColors.YELLOW, TextStyles.BOLD, "[", TextColors.GREEN, TextStyles.ITALIC, "FLARD",
-                                                     TextStyles.RESET, TextColors.YELLOW, TextStyles.BOLD, "]");
-    public static final Text LORE_FIRST = Text.of(TextColors.BLUE, TextStyles.ITALIC, "This is indeed a glorious day!");
-    public static final Text LORE_SECOND = Text.of(TextColors.BLUE, TextStyles.ITALIC, "Shining sun makes the clouds flee");
-    public static final Text LORE_THIRD = Text.of(TextColors.BLUE, TextStyles.ITALIC, "With State of ", TextColors.YELLOW, "Sponge",
-                                                   TextColors.BLUE, " again today");
-    public static final Text LORE_FOURTH = Text.of(TextColors.BLUE, TextStyles.ITALIC, "Granting delights for you and me");
-    public static final Text LORE_FIFTH = Text.of(TextColors.BLUE, TextStyles.ITALIC, "For ", TextColors.YELLOW, "Sponge", TextColors.BLUE,
-                                                   " is in a State of play");
-    public static final Text LORE_SIXTH = Text.of(TextColors.BLUE, TextStyles.ITALIC, "Today, be happy as can be!");
-    public static final ImmutableList<Text> LORE = ImmutableList.of(LORE_FIRST, LORE_SECOND, LORE_THIRD, LORE_FOURTH, LORE_FIFTH, LORE_SIXTH);
-    public static final Random RANDOM = new Random();
+    private static final ItemType[] SELL_TYPES = new ItemType[]{ItemTypes.SLIME_BALL, ItemTypes.HARDENED_CLAY, ItemTypes.BLAZE_ROD, ItemTypes.APPLE,
+            ItemTypes.GHAST_TEAR, ItemTypes.COBBLESTONE, ItemTypes.STICK, ItemTypes.EMERALD,};
+    private static final List<ItemType> BUYING_TYPES = ImmutableList.of(ItemTypes.ACACIA_DOOR, ItemTypes.LEAVES2, ItemTypes.BOOKSHELF, ItemTypes.COAL,
+            ItemTypes.COBBLESTONE, ItemTypes.ANVIL, ItemTypes.IRON_ORE, ItemTypes.APPLE,
+            ItemTypes.WHEAT_SEEDS, ItemTypes.DIRT);
+    private static final Text FLARDARIAN = Text.of(TextColors.DARK_AQUA, TextStyles.BOLD, TextStyles.ITALIC, "Flardarian");
+    private static final Text ITEM_DISPLAY = Text.of(TextColors.YELLOW, TextStyles.BOLD, "[", TextColors.GREEN, TextStyles.ITALIC, "FLARD",
+            TextStyles.RESET, TextColors.YELLOW, TextStyles.BOLD, "]");
+    private static final Text LORE_FIRST = Text.of(TextColors.BLUE, TextStyles.ITALIC, "This is indeed a glorious day!");
+    private static final Text LORE_SECOND = Text.of(TextColors.BLUE, TextStyles.ITALIC, "Shining sun makes the clouds flee");
+    private static final Text LORE_THIRD = Text.of(TextColors.BLUE, TextStyles.ITALIC, "With State of ", TextColors.YELLOW, "Sponge",
+            TextColors.BLUE, " again today");
+    private static final Text LORE_FOURTH = Text.of(TextColors.BLUE, TextStyles.ITALIC, "Granting delights for you and me");
+    private static final Text LORE_FIFTH = Text.of(TextColors.BLUE, TextStyles.ITALIC, "For ", TextColors.YELLOW, "Sponge", TextColors.BLUE,
+            " is in a State of play");
+    private static final Text LORE_SIXTH = Text.of(TextColors.BLUE, TextStyles.ITALIC, "Today, be happy as can be!");
+    private static final ImmutableList<Text> LORE = ImmutableList.of(LORE_FIRST, LORE_SECOND, LORE_THIRD, LORE_FOURTH, LORE_FIFTH, LORE_SIXTH);
+    private static final Random RANDOM = new Random();
 
     @Listener
     public void onSpawn(SpawnEntityEvent event) {
         event.getEntities().stream()
-            .filter(entity1 -> entity1.getType().equals(EntityTypes.VILLAGER) && Math.random() > 0.7)
-            .forEach(villager -> {
-                villager.offer(Keys.CAREER, Careers.CLERIC);
-                villager.offer(Keys.DISPLAY_NAME, FLARDARIAN);
-                villager.offer(Keys.CUSTOM_NAME_VISIBLE, true);
-                villager.offer(Keys.INVULNERABILITY_TICKS, 10000);
-                villager.offer(generateTradeOffer());
-            });
+                .filter(entity1 -> entity1.getType().equals(EntityTypes.VILLAGER) && Math.random() > 0.7)
+                .forEach(villager -> {
+                    villager.offer(Keys.CAREER, Careers.CLERIC);
+                    villager.offer(Keys.DISPLAY_NAME, FLARDARIAN);
+                    villager.offer(Keys.CUSTOM_NAME_VISIBLE, true);
+                    villager.offer(Keys.INVULNERABILITY_TICKS, 10000);
+                    villager.offer(generateTradeOffer());
+                });
     }
 
     private TradeOfferData generateTradeOffer() {
@@ -73,25 +73,25 @@ public class Flardians {
 
         // Create the selling item
         final ItemStack selling = ItemStack.builder()
-            .itemType(BUYING_TYPES.get(itemRand))
-            .itemData(itemName)
-            .itemData(loreData)
-            .quantity(1)
-            .build();
+                .itemType(BUYING_TYPES.get(itemRand))
+                .itemData(itemName)
+                .itemData(loreData)
+                .quantity(1)
+                .build();
 
         // Create the buying item
         final ItemStack buying = ItemStack.builder()
-            .itemType(SELL_TYPES[rand])
-            .quantity(1)
-            .build();
+                .itemType(SELL_TYPES[rand])
+                .quantity(1)
+                .build();
 
         final TradeOfferData tradeOfferData = Sponge.getDataManager().getManipulatorBuilder(TradeOfferData.class).get().create();
         tradeOfferData.set(tradeOfferData.tradeOffers()
-                               .add(TradeOffer.builder()
-                                        .firstBuyingItem(buying)
-                                        .maxUses(10000)
-                                        .sellingItem(selling)
-                                        .build()));
+                .add(TradeOffer.builder()
+                        .firstBuyingItem(buying)
+                        .maxUses(10000)
+                        .sellingItem(selling)
+                        .build()));
         return tradeOfferData;
     }
 

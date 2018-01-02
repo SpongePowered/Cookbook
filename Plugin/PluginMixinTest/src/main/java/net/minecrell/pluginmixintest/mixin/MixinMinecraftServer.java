@@ -12,7 +12,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(MinecraftServer.class)
 public abstract class MixinMinecraftServer {
 
-    @Shadow @Final private static Logger LOGGER;
+    @Shadow
+    @Final
+    private static Logger LOGGER;
 
     @Inject(method = "run", at = @At("HEAD"))
     private void onRunHead(CallbackInfo ci) {

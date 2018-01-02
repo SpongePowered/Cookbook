@@ -32,12 +32,11 @@ public class RunnableTaskBody implements Runnable {
 
         if (this.basis == TimeBase.TICK) {
             expected = "" + (50 * this.period);
-        }
-        else if (this.basis == TimeBase.WALLCLOCK) {
+        } else if (this.basis == TimeBase.WALLCLOCK) {
             expected = "" + this.period;
         }
 
-        if ( this.verbosity ) {
+        if (this.verbosity) {
             System.out.println(this.label + "\t" + nanos + "\t" + mils +
                     "\t" + (mils - this.counter) + " (Expected: " + expected + ") \t" + (nanos - this.lastnano));
         }
