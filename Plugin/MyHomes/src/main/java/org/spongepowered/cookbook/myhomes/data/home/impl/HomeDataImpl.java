@@ -53,6 +53,8 @@ public class HomeDataImpl extends AbstractData<HomeData, ImmutableHomeData> impl
     public HomeDataImpl(Home defaultHome, Map<String, Home> homes) {
         this.defaultHome = defaultHome;
         this.homes = homes;
+
+        this.registerGettersAndSetters();
     }
 
     // It's best to provide an empty constructor with "default" values

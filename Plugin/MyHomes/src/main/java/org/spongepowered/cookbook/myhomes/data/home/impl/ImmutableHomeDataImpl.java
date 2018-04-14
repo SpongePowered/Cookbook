@@ -62,6 +62,8 @@ public class ImmutableHomeDataImpl extends AbstractImmutableData<ImmutableHomeDa
         this.homesValue = Sponge.getRegistry().getValueFactory()
                 .createMapValue(MyHomes.HOMES, homes, ImmutableMap.of())
                 .asImmutable();
+
+        this.registerGetters();
     }
 
     // Override if you have a separate interface
