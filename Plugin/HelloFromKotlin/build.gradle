@@ -27,3 +27,9 @@ sourceSets {
     // Kotlin finds code from the java source directory, so rename it to kotlin
     main.java.srcDirs += 'src/main/kotlin'
 }
+
+shadowJar {
+    // It's good practice to relocate your shaded kotlin library so it won't
+    // conflict with other shaded kotlin libraries
+    relocate 'kotlin', 'org.spongepowered.cookbook.shadekotlin'
+}

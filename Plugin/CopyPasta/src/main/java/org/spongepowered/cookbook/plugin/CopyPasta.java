@@ -54,6 +54,7 @@ public class CopyPasta {
     @ConfigDir(sharedRoot = false)
     private File config;
 
+    //We store players in a map using UUIDs to allow player objects to be garbage collected.
     private final Map<UUID, PlayerData> player_data = Maps.newHashMap();
     private File schematicsDir;
 

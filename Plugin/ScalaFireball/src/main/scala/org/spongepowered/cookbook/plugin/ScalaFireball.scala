@@ -27,6 +27,8 @@ package org.spongepowered.cookbook.plugin
 
 import java.util.Optional
 
+import scala.annotation.tailrec
+
 import com.flowpowered.math.vector.Vector3d
 import com.google.inject.Inject
 import org.spongepowered.api.Sponge
@@ -43,14 +45,12 @@ import org.spongepowered.api.event.{Listener, Order}
 import org.spongepowered.api.item.ItemTypes
 import org.spongepowered.api.plugin.{Plugin, PluginContainer}
 import org.spongepowered.api.text.Text
-import org.spongepowered.api.text.format.TextColors
-import org.spongepowered.api.world.World
-
 import scala.collection.mutable
 
+// In Scala we don't have static. Instead we have singleton objects. When one
+// wants something similar to static, one places a class and an object together.
+// The object is then called the companion object and gets special treatment.
 object ScalaFireball {
-  val NoPermission: Text = Text.of(TextColors.RED,
-    "Hey! you don't have permission for large fireballs... NOOB!!")
 
   private def getVelocity(player: Player, multiplier: Double): Vector3d = {
     // When using Scala, you don't have to specify the types for values, or
@@ -73,9 +73,33 @@ object ScalaFireball {
     def asOption: Option[A] = optional.map(Option.apply(_)).orElse(None)
   }
 
+  // Calling Text.of with a bunch of arguments is so tedious. Let's make it so
+  // we can use a String interpolator instead.
+  implicit class TextSyntax(private val sc: StringContext) extends AnyVal {
+
+    def t(args: Any*): Text = {
+      sc.checkLengths(args)
+
+      // Tail recursive functions are Scala's equivalent of while loops
+      @tailrec
+      def inner(partsLeft: Seq[String], argsLeft: Seq[Any], res: Seq[AnyRef]): Seq[AnyRef] =
+        if (argsLeft == Nil) res
+        else {
+          inner(partsLeft.tail, argsLeft.tail, (res :+ argsLeft.head.asInstanceOf[AnyRef]) :+ partsLeft.head)
+        }
+
+      Text.of(inner(sc.parts.tail, args, Seq(sc.parts.head)): _*)
+    }
+  }
+
+  // Let's use our new string interpolator. We also import all colors here for nicer
+  // syntax.
+  import org.spongepowered.api.text.format.TextColors._
+  val NoPermission: Text = t"${RED}Hey! you don't have permission for large fireballs... NOOB!!"
+
 }
 
-@Plugin(id = "ScalaFireballs", name = "ScalaFireballs", version = "1.1")
+@Plugin(id = "scalafireballs", name = "ScalaFireballs", version = "1.1")
 class ScalaFireball {
 
   // To use our implicit class we need to import it
@@ -83,16 +107,15 @@ class ScalaFireball {
 
   // Scala has it's own collection library, filled with many collections
   // similar to the ones found in java, in addition to many new ones.
-  private val fireballMap: mutable.WeakHashMap[Projectile, Vector3d] =
-  mutable.WeakHashMap.empty[Projectile, Vector3d]
+  private val fireballMap: mutable.WeakHashMap[Projectile, Vector3d] = mutable.WeakHashMap.empty[Projectile, Vector3d]
 
   // In scala when defining a missing value, a missing value (null, 0, and so on)
   // a underscore can be used instead
   @Inject
-  private val container: PluginContainer = _
+  private var container: PluginContainer = _
 
   @Listener
-  def onStarting(event: GameStartingServerEvent) {
+  def onStarting(event: GameStartingServerEvent): Unit = {
     Sponge.getScheduler.createTaskBuilder
       .execute(new FireballUpdater)
       .intervalTicks(1)
@@ -100,7 +123,7 @@ class ScalaFireball {
   }
 
   @Listener(order = Order.POST)
-  def onInteract(event: InteractBlockEvent, @First player: Player) {
+  def onInteract(event: InteractBlockEvent, @First player: Player): Unit = {
     val optItem = player.getItemInHand(HandTypes.MAIN_HAND).asOption
       .orElse(player.getItemInHand(HandTypes.OFF_HAND).asOption)
 
@@ -114,7 +137,7 @@ class ScalaFireball {
       // that you're not limited to testing against a boolean expression.
       // You can test against the type, if it's a specific value (as we do here),
       // you can extract values as is common to do with Option, and more.
-      stack.getItem match {
+      stack.getType match {
         case ItemTypes.STICK => spawnFireball(player)
         // We can also combine these tests. Here we test if it's a specific
         // value, and then test if the player has the needed permissions.
@@ -131,10 +154,23 @@ class ScalaFireball {
     }
   }
 
-  private def spawnFireball(player: Player) {
-    val world: World = player.getWorld
+  // Having to remember to pop our stack frames is boring. Let's create e
+  // helper method for that.
+
+  def usingCauseStackFrame[A, B](cause: A)(use: => B): B = {
+    // Here we use a call-by-name parameter, which means that it's not
+    // evaluated until we use it. Think of it kind of like a Supplier.
+    Sponge.getCauseStackManager.pushCause(cause)
+    val res = use
+    Sponge.getCauseStackManager.popCause()
+    res
+  }
+
+  private def spawnFireball(player: Player): Unit = {
+    val world = player.getWorld
     val entity = world.createEntity(
-      EntityTypes.SNOWBALL, player.getLocation.getPosition.add(
+      EntityTypes.SNOWBALL,
+      player.getLocation.getPosition.add(
         Math.cos((player.getRotation.getY - 90) % 360) * 0.2,
         1.8,
         Math.sin((player.getRotation.getY - 90) % 360) * 0.2
@@ -150,9 +186,9 @@ class ScalaFireball {
       case fireball: Snowball =>
         fireball.setShooter(player)
         fireball.offer(Keys.ATTACK_DAMAGE, Double.box(4D))
-        Sponge.getCauseStackManager.pushCause(player)
-        world.spawnEntity(fireball)
-        Sponge.getCauseStackManager.popCause()
+        usingCauseStackFrame(player) {
+          world.spawnEntity(fireball)
+        }
         fireball.offer(Keys.FIRE_TICKS, Int.box(100000))
       case _ =>
     }
@@ -169,9 +205,9 @@ class ScalaFireball {
         fireball.setShooter(player)
         fireball.offer(Keys.EXPLOSION_RADIUS, Optional.of(Int.box(3)))
         fireball.offer(Keys.ATTACK_DAMAGE, Double.box(8))
-        Sponge.getCauseStackManager.pushCause(player)
-        world.spawnEntity(fireball)
-        Sponge.getCauseStackManager.popCause()
+        usingCauseStackFrame(player) {
+          world.spawnEntity(fireball)
+        }
         fireballMap.put(fireball, velocity)
       case _ =>
     }
@@ -184,5 +220,4 @@ class ScalaFireball {
       }
     }
   }
-
 }

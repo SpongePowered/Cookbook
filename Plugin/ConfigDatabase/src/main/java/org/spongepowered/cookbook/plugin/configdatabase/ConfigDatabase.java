@@ -81,7 +81,7 @@ public class ConfigDatabase {
     // This is where we begin initializing our plugin.
     // The PreInitialization phase is appropriate for reading in (or creating) our config files, but
     // the server is in an early state of starting up yet, so don't do more than that.
-    // See https://docs.spongepowered.org/en/latest/plugins/plugin-lifecycle/ for more information on
+    // See https://docs.spongepowered.org/stable/en/plugin/lifecycle.html for more information on
     // what you can do (And what is appropriate to do) in each stage.
     //
 
@@ -151,14 +151,14 @@ public class ConfigDatabase {
             default: {
                 this.config.getNode("ConfigVersion").setValue(3);
                 getLogger().info("Configuration file is current.");
-
-                try {
-                    // Save any changes
-                    getConfigManager().save(this.config);
-                } catch (IOException e) {
-                    getLogger().error("Failed to save config file!", e);
-                }
             }
+        }
+
+        try {
+            // Save any changes
+            getConfigManager().save(this.config);
+        } catch (IOException e) {
+            getLogger().error("Failed to save config file!", e);
         }
     }
 
