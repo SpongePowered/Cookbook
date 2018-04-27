@@ -88,6 +88,9 @@ public class CopyPasta {
                     }
                     Vector3i min = data.getPos1().min(data.getPos2());
                     Vector3i max = data.getPos1().max(data.getPos2());
+
+                    // Defines the volume we will be copying, using the min
+                    // and max values gotten from the interact events.
                     ArchetypeVolume volume = player.getWorld().createArchetypeVolume(min, max, player.getLocation().getPosition().toInt());
                     data.setClipboard(volume);
                     player.sendMessage(Text.of(TextColors.GREEN, "Saved to clipboard."));
@@ -109,6 +112,9 @@ public class CopyPasta {
                         player.sendMessage(Text.of(TextColors.RED, "You must copy something before pasting"));
                         return CommandResult.success();
                     }
+
+                    // Here we paste in the volume that we have previously
+                    // copied or loaded. We specify that we want all block changes (update neighbor, observers and physics)
                     volume.apply(player.getLocation(), BlockChangeFlags.ALL);
                     player.sendMessage(Text.of(TextColors.GREEN, "Pasted clipboard into world."));
                     return CommandResult.success();
@@ -136,12 +142,20 @@ public class CopyPasta {
                         player.sendMessage(Text.of(TextColors.RED, "Unsupported schematic format, supported formats are [legacy, sponge]"));
                         return CommandResult.success();
                     }
+
+                    // Here we create the schematic object, set it's values,
+                    // volume, and palette. The palette defines how the blocks
+                    // are saved.
+
                     Schematic schematic = Schematic.builder()
                             .volume(data.getClipboard())
                             .metaValue(Schematic.METADATA_AUTHOR, player.getName())
                             .metaValue(Schematic.METADATA_NAME, name)
                             .paletteType(BlockPaletteTypes.LOCAL)
                             .build();
+
+                    // We need to serialize the Schematic to a DataContainer so
+                    // that we can save it using one of the DataFormats.
                     DataContainer schematicData = null;
                     if ("legacy".equalsIgnoreCase(format)) {
                         schematicData = DataTranslators.LEGACY_SCHEMATIC.translate(schematic);
@@ -150,6 +164,8 @@ public class CopyPasta {
                     }
                     File outputFile = new File(this.schematicsDir, name + ".schematic");
                     try {
+
+                        // Normally we save NBT files as NBT files. We do this by using the NBT DataFormat.
                         DataFormats.NBT.writeTo(new GZIPOutputStream(new FileOutputStream(outputFile)), schematicData);
                         player.sendMessage(Text.of(TextColors.GREEN, "Saved schematic to " + outputFile.getAbsolutePath()));
                     } catch (Exception e) {
@@ -184,6 +200,8 @@ public class CopyPasta {
                     }
                     DataContainer schematicData = null;
                     try {
+                        // Schematics and normally saved as NBT, so we use the
+                        // NBT DataFormat to read the data.
                         schematicData = DataFormats.NBT.readFrom(new GZIPInputStream(new FileInputStream(inputFile)));
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -191,6 +209,8 @@ public class CopyPasta {
                         return CommandResult.success();
                     }
                     Schematic schematic = null;
+
+                    // We need to deserialize the DataContainer to a Schematic before we cam use it.
                     if ("legacy".equalsIgnoreCase(format)) {
                         schematic = DataTranslators.LEGACY_SCHEMATIC.translate(schematicData);
                     } else if ("sponge".equalsIgnoreCase(format)) {
@@ -206,7 +226,7 @@ public class CopyPasta {
     @Listener
     public void onInteract(InteractBlockEvent.Secondary.MainHand event, @Root Player player) {
         Optional<ItemStack> item = player.getItemInHand(HandTypes.MAIN_HAND);
-        if (item.isPresent() && item.get().getItem().equals(ItemTypes.WOODEN_AXE) && event.getTargetBlock() != BlockSnapshot.NONE) {
+        if (item.isPresent() && item.get().getType().equals(ItemTypes.WOODEN_AXE) && event.getTargetBlock() != BlockSnapshot.NONE) {
             get(player).setPos2(event.getTargetBlock().getPosition());
             player.sendMessage(Text.of(TextColors.LIGHT_PURPLE, "Position 2 set to " + event.getTargetBlock().getPosition()));
             event.setCancelled(true);
@@ -216,7 +236,7 @@ public class CopyPasta {
     @Listener
     public void onInteract(InteractBlockEvent.Primary.MainHand event, @Root Player player) {
         Optional<ItemStack> item = player.getItemInHand(HandTypes.MAIN_HAND);
-        if (item.isPresent() && item.get().getItem().equals(ItemTypes.WOODEN_AXE)) {
+        if (item.isPresent() && item.get().getType().equals(ItemTypes.WOODEN_AXE)) {
             get(player).setPos1(event.getTargetBlock().getPosition());
             player.sendMessage(Text.of(TextColors.LIGHT_PURPLE, "Position 1 set to " + event.getTargetBlock().getPosition()));
             event.setCancelled(true);

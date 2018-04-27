@@ -13,3 +13,10 @@ Used (but not explained) in this plugin.
 * Data
 * Commands
 * Entity spawning
+
+## Compiling and building
+To run and build the code for this plugin, make sure you have [sbt](https://www.scala-sbt.org/) installed.
+
+To compile this project run `sbt compile`.
+
+To build this project, run `sbt assembly`

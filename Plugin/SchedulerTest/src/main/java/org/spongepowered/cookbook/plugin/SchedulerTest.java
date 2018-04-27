@@ -29,9 +29,11 @@ public class SchedulerTest {
 
         // setup the watch dog:
         this.watchDog.setVerbose(false);
+
+        // createTaskBuilder is one of the simpler ways to register custom runnables.
         Sponge.getScheduler().createTaskBuilder()
                 .execute(this.watchDog)
-                .intervalTicks(250)
+                .intervalTicks(250) // intervalTicks lets you run code every x ticks. Use this if you don't want to rely on real time
                 .submit(this);
 
         // make some Synchronous Tasks
@@ -57,6 +59,10 @@ public class SchedulerTest {
             String label = "TestTask (ASYNC)" + i + " [Period:" + period + "] ";
             RunnableTaskBody runnable = new RunnableTaskBody(label, period, RunnableTaskBody.TimeBase.WALLCLOCK);
             runnable.setVerbose(true);
+
+            // Here we use async to specify that the task should not be
+            // executed on the main thread. Be wary of whoch code you can
+            // touch from threads other than the main thread.
             Task task = Sponge.getScheduler().createTaskBuilder()
                     .async()
                     .execute(runnable)
@@ -65,6 +71,15 @@ public class SchedulerTest {
             myTasks.add(task);
 
         }
+
+        //We can also use lambdas for our Runnables
+        Task lambdaTask = Sponge.getScheduler().createTaskBuilder()
+                .async()
+                .interval(1, TimeUnit.MINUTES)
+                .execute(() -> System.out.println("Lambda FTW!!"))
+                .submit(this);
+        myTasks.add(lambdaTask);
+
         System.out.println("Ending ServerStartedEvent");
     }
 }

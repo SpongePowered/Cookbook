@@ -9,3 +9,8 @@ This plugin covers
 Used (but not explained) in this plugin.
 * Text
 * Commands
+
+## Compiling and building
+To compile this project run `gradlew compileJava`.
+
+To build this project, run `gradlew shadow`
