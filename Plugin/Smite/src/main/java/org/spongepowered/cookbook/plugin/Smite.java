@@ -60,7 +60,7 @@ public class Smite {
     public void onInteract(InteractBlockEvent.Primary event, @First Player player) {
         // Check if the player is hitting with an ender eye and has the permissions
         final Optional<ItemStack> optionalStack = player.getItemInHand(HandTypes.MAIN_HAND);
-        if (!optionalStack.isPresent() || optionalStack.get().getItem().getType() != ItemTypes.ENDER_EYE ||
+        if (!optionalStack.isPresent() || optionalStack.get().getType().getType() != ItemTypes.ENDER_EYE ||
                 !player.hasPermission("smite.use")) {
             return;
         }

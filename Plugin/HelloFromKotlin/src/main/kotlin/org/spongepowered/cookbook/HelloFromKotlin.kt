@@ -17,7 +17,7 @@ import org.spongepowered.api.text.title.Title
 import java.net.URL
 
 // Plugins are declared in basically the same way as Java.
-@Plugin(id = "HelloFromKotlin", name = "Hello From Kotlin!", version = "1.0.1")
+@Plugin(id = "hellofromkotlin", name = "Hello From Kotlin!", version = "1.0.1")
 class HelloFromKotlin {
 
     // In Kotlin, types are non-nullable by default. Normally, you would have
