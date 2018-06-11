@@ -7,10 +7,11 @@ This plugin covers
 * How to set up Gradle for shading
 
 Used (but not explained) in this plugin.
+* Event listeners
 * Text
 * Commands
 
 ## Compiling and building
-To compile this project run `gradlew compileJava`.
+To compile this project run `gradlew compileKotlin`.
 
 To build this project, run `gradlew shadow`

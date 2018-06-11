@@ -1,8 +1,18 @@
+buildscript {
+    ext.kotlin_version = '1.2.41'
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
 plugins {
     id "org.jetbrains.kotlin.jvm" version "1.2.10"
     // Kotlin's stdlib and such need to be shadowed in.
     id 'com.github.johnrengelman.shadow' version '2.0.2'
 }
+apply plugin: 'kotlin'
 
 version = '1.2'
 
@@ -21,6 +31,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-runtime:$kotlinVersion"
     // We don't want to include sponge in the shadow jar
     compileOnly 'org.spongepowered:spongeapi:7.0.0'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
 
 sourceSets {
@@ -32,4 +43,14 @@ shadowJar {
     // It's good practice to relocate your shaded kotlin library so it won't
     // conflict with other shaded kotlin libraries
     relocate 'kotlin', 'org.spongepowered.cookbook.shadekotlin'
+}
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
