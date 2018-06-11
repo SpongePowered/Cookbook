@@ -4,6 +4,7 @@ A Sponge plugin showing you could possibly use Scala together with Sponge.
 
 This plugin covers
 * The basics of Scala, it's syntax, extension methods, string iterpolators, tailrec, collections, call-by-name parameters.
+* The spongyinfo sbt plugin.
 * How to set up SBT and shading
 
 Used (but not explained) in this plugin.
@@ -11,7 +12,6 @@ Used (but not explained) in this plugin.
 * Text
 * Scheduler
 * Data
-* Commands
 * Entity spawning
 
 ## Compiling and building

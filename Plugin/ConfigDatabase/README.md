@@ -9,3 +9,8 @@ It will
 * Print to console what is happening, and when it's ready to run code
 
 It also briefly goes over plugin lifecycles.
+
+## Compiling and building
+To compile this project run `gradlew compileJava`.
+
+To build this project, run `gradlew build`

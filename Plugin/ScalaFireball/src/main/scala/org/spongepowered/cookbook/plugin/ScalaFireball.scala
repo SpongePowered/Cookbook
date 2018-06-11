@@ -99,7 +99,7 @@ object ScalaFireball {
 
 }
 
-@Plugin(id = "scalafireballs", name = "ScalaFireballs", version = "1.1")
+@Plugin(id = "scalafireballs", name = "ScalaFireballs", version = "1.2")
 class ScalaFireball {
 
   // To use our implicit class we need to import it
@@ -117,7 +117,11 @@ class ScalaFireball {
   @Listener
   def onStarting(event: GameStartingServerEvent): Unit = {
     Sponge.getScheduler.createTaskBuilder
-      .execute(new FireballUpdater)
+      .execute(() => {
+        for ((projectile, speed) <- fireballMap) {
+          projectile.offer(Keys.VELOCITY, speed)
+        }
+      })
       .intervalTicks(1)
       .submit(this.container)
   }
@@ -138,11 +142,10 @@ class ScalaFireball {
       // You can test against the type, if it's a specific value (as we do here),
       // you can extract values as is common to do with Option, and more.
       stack.getType match {
-        case ItemTypes.STICK => spawnFireball(player)
+        case ItemTypes.STICK => spawnFireball(player, large = false)
         // We can also combine these tests. Here we test if it's a specific
         // value, and then test if the player has the needed permissions.
-        case ItemTypes.BLAZE_ROD if player.hasPermission("simplefireball.large") =>
-          spawnLargeFireball(player)
+        case ItemTypes.BLAZE_ROD if player.hasPermission("simplefireball.large") => spawnFireball(player, large = true)
         case ItemTypes.BLAZE_ROD => player.sendMessage(ScalaFireball.NoPermission)
         case _ =>
         // We need to add a base case at the end if we haven't covered all
@@ -157,7 +160,7 @@ class ScalaFireball {
   // Having to remember to pop our stack frames is boring. Let's create e
   // helper method for that.
 
-  def usingCauseStackFrame[A, B](cause: A)(use: => B): B = {
+  def withCause[A, B](cause: A)(use: => B): B = {
     // Here we use a call-by-name parameter, which means that it's not
     // evaluated until we use it. Think of it kind of like a Supplier.
     Sponge.getCauseStackManager.pushCause(cause)
@@ -166,58 +169,37 @@ class ScalaFireball {
     res
   }
 
-  private def spawnFireball(player: Player): Unit = {
+  private def spawnFireball(player: Player, large: Boolean): Unit = {
     val world = player.getWorld
-    val entity = world.createEntity(
-      EntityTypes.SNOWBALL,
-      player.getLocation.getPosition.add(
-        Math.cos((player.getRotation.getY - 90) % 360) * 0.2,
-        1.8,
-        Math.sin((player.getRotation.getY - 90) % 360) * 0.2
-      )
+    val spawnLocation = player.getLocation.getPosition.add(
+      Math.cos((player.getRotation.getY - 90) % 360) * 0.2,
+      1.8,
+      Math.sin((player.getRotation.getY - 90) % 360) * 0.2
     )
+    val entity = world.createEntity(if(large) EntityTypes.FIREBALL else EntityTypes.SNOWBALL, spawnLocation)
 
     val velocity = ScalaFireball.getVelocity(player, 1.5D)
+    val attackDamage = if(large) 8D else 4D
     entity.offer(Keys.VELOCITY, velocity)
+    entity.offer(Keys.ATTACK_DAMAGE, Double.box(attackDamage))
 
     // You normally don't do any casting in Scala. Instead you use pattern
     // matching on the values.
     entity match {
-      case fireball: Snowball =>
+      case fireball: Projectile =>
         fireball.setShooter(player)
-        fireball.offer(Keys.ATTACK_DAMAGE, Double.box(4D))
-        usingCauseStackFrame(player) {
+        withCause(player) {
           world.spawnEntity(fireball)
         }
-        fireball.offer(Keys.FIRE_TICKS, Int.box(100000))
-      case _ =>
-    }
-  }
 
-  private def spawnLargeFireball(player: Player) {
-    val world = player.getWorld
-    val entity = world.createEntity(EntityTypes.FIREBALL, player.getLocation.getPosition.add(0, 1.8, 0))
-    val velocity = ScalaFireball.getVelocity(player, 1.5D)
-    entity.offer(Keys.VELOCITY, velocity)
-
-    entity match {
-      case fireball: LargeFireball =>
-        fireball.setShooter(player)
-        fireball.offer(Keys.EXPLOSION_RADIUS, Optional.of(Int.box(3)))
-        fireball.offer(Keys.ATTACK_DAMAGE, Double.box(8))
-        usingCauseStackFrame(player) {
-          world.spawnEntity(fireball)
+        if(large) {
+          fireball.offer(Keys.EXPLOSION_RADIUS, Optional.of(Int.box(3)))
+          fireballMap.put(fireball, velocity)
         }
-        fireballMap.put(fireball, velocity)
+        else {
+          fireball.offer(Keys.FIRE_TICKS, Int.box(100000))
+        }
       case _ =>
-    }
-  }
-
-  class FireballUpdater extends Runnable {
-    def run(): Unit = {
-      for ((projectile, speed) <- fireballMap) {
-        projectile.offer(Keys.VELOCITY, speed)
-      }
     }
   }
 }
