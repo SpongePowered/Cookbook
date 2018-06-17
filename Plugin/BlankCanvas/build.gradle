@@ -1,0 +1,50 @@
+// BlankCanvas Plugin build.gradle
+
+plugins {
+   id 'java'
+   id 'checkstyle'
+   id 'org.spongepowered.plugin' version '0.6'
+   id 'net.minecrell.licenser' version '0.3'
+}
+
+
+defaultTasks 'licenseFormat', 'build'
+
+version = '1.0'
+
+checkstyle {
+    configProperties = [
+            "name"        : project.name,
+            "organization": project.organization,
+            "url"         : project.url,
+            "year"        : project.inceptionYear
+    ]
+    configFile = file("checkstyle.xml")
+}
+
+// License header formatting
+license {
+    ext {
+        name = project.name
+        organization = project.organization
+        url = project.url
+    }
+    header = project.file('HEADER.txt')
+    include '**/*.java'
+    newLine = false
+}
+
+dependencies {
+   	compile("org.spongepowered:spongeapi:5.0.0-SNAPSHOT")
+
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src'
+        }
+    }
+}
+
+
